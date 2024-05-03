@@ -62,6 +62,37 @@ def generate_caption(model, base64img):
         # エラーがあればその内容を表示
         return "Error generating caption: " + response.text
 
+def save_tags_and_caption(input_text, base_filename, output_dir):
+    """入力テキストからタグとキャプションを抽出し、別々のファイルに保存する。
+    Args:
+        input_text (str): 'Tags:' と 'Caption:' を含むテキスト。
+        image_filename (str): 画像ファイルの名前。
+        output_dir (str): 出力ディレクトリのパス。
+    """
+    # 'Tags:' と 'Caption:' のインデックスを見つける
+    tags_index = input_text.find('Tags:')
+    caption_index = input_text.find('Caption:')
+
+    # タグとキャプションのテキストを抽出
+    tags_text = input_text[tags_index + len('Tags:'):caption_index].strip()
+    caption_text = input_text[caption_index + len('Caption:'):].strip()
+
+    # ファイル名の準備
+    tags_filename = f"{base_filename}.txt"
+    caption_filename = f"{base_filename}.caption"
+
+    # タグをテキストファイルに保存
+    with open(os.path.join(output_dir, tags_filename), 'w', encoding='utf-8') as file:
+        file.write(tags_text)
+
+    # キャプションをキャプションファイルに保存
+    with open(os.path.join(output_dir, caption_filename), 'w', encoding='utf-8') as file:
+        file.write(caption_text)
+
+    print(f"Tags saved to {tags_filename}")
+    print(f"Caption saved to {caption_filename}")
+
+
 def caption_gpt4(input_dir):
     """#フォルダ内の画像に対応した.captionがない場合OpenAI API GTP-4を使って生成
     Args:
@@ -77,17 +108,13 @@ def caption_gpt4(input_dir):
             # キャプションファイルが存在しない場合のみ処理を行う
             if not os.path.exists(caption_path):
                 print(f'Processing {filename}...')
-
                 # 画像をBase64エンコードでロード
                 base64img = encode_image(image_path)
-
                 #キャプションの生成
                 caption = generate_caption(MODEL, base64img)
                 print(caption)
                 # キャプションをファイルに保存
-                caption_path = os.path.join(input_dir, f'{base_filename}.caption')
-                with open(caption_path, 'w', encoding='utf-8') as f:
-                    f.write(caption)
-                print(f'Saved caption to {caption_path}')
+                save_tags_and_caption(caption, base_filename, input_dir)
+
 
 caption_gpt4(input_dir)
