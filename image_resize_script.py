@@ -5,11 +5,12 @@
 #入力ディレクトリと同じ場所に｢入力ディレクトリ名_Webp｣にWebP形式で｢入力ディレクトリ名+連番｣の名前で保存
 import os
 import io
+import shutil
 from pathlib import Path
 from PIL import Image, ImageCms
 
 # 設定
-TARGET_FOLDER = Path(r'H:\lora\素材リスト\スクリプト\testimg\\10_test')
+TARGET_FOLDER = Path(r'H:\lora\素材リスト\スクリプト\testimg')
 TARGET_RESOLUTION = 1024  # 長辺のピクセル数
 
 
@@ -97,7 +98,7 @@ def main():
                             text_file_path = root_path / (base_name + suffix)
                             if text_file_path.exists():
                                 output_text_path = output_folder / f"{root_path.stem}_{sequence}{suffix}"
-                                text_file_path.rename(output_text_path)
+                                shutil.copy(text_file_path, output_text_path)
                                 print(f'Saved:{output_text_path}')
                         sequence += 1
 
