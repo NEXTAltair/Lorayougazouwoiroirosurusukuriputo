@@ -2,22 +2,11 @@ import os
 import json
 import re
 from pathlib import Path
-
+from cleanup_txt import clean_format
 response_jsonl = Path(r"H:\lora\素材リスト\スクリプト\batch_NQSlut9MastLSSP5nHvQMkq7_output.jsonl")
 output_dir =Path(r"H:\lora\素材リスト\スクリプト\testimg_Processed")
 
-def clean_format(text):
-    """
-    テキストから無駄な記号を削除
-    Args:
-        text (str): クリーニングするテキスト。
-    Returns:
-        str: クリーニング後のテキスト。
-    """
-    text = re.sub(r'\*\*', '', text)
-    text = re.sub(r'\n+', ', ', text)
-    text = re.sub(r'\.\s*$', '', text)
-    return text
+
 
 def save_tags_and_captions(response_jsonl, output_dir):
     """
@@ -34,14 +23,14 @@ def save_tags_and_captions(response_jsonl, output_dir):
         for line in jsonl_file:
             data = json.loads(line.strip())
 
-            # JSONデータからタグとキャプションを抽出して保存
+            # JSONデータからcustom_idと返答を抽出して保存
             base_filename = data['custom_id']
             content = data['response']['body']['choices'][0]['message']['content']
 
             # テキストのフォーマットをクリーンアップ
             content = clean_format(content)
 
-            # 'Tags:' と 'Caption:' のインデックスを見つける
+            # 'Tags:' と 'Caption:' が何番目に含まれているかを見つける
             tags_index = content.find('Tags:')
             caption_index = content.find('Caption:')
 
