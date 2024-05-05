@@ -1,7 +1,7 @@
 #https://github.com/kohya-ss/sd-scripts/blob/main/finetune/merge_captions_to_metadata.py
 #https://github.com/kohya-ss/sd-scripts/blob/main/finetune/merge_dd_tags_to_metadata.py
 import json
-from cleanup_txt import clean_format
+from cleanup_txt import clean_format, clean_tags, clean_caption
 from pathlib import Path
 
 train_images_dir = Path(r'H:\lora\素材リスト\スクリプト\testimg_Processed')
@@ -41,6 +41,10 @@ def process_jsonl(jsonl_file_path, output_dir):
             tags_text = content[tags_index + len('Tags:'):caption_index].strip()
             caption_text = content[caption_index + len('Caption:'):].strip()
 
+            # タグとキャプションをクリーンアップ
+            tags_text = clean_tags(tags_text)
+            caption_text = clean_caption(caption_text)
+
             # メタデータ辞書にキャプションとタグを保存
             metadata[image_key] = {
                     "tags": {"tags": tags_text},
@@ -51,6 +55,8 @@ def process_jsonl(jsonl_file_path, output_dir):
         merge_tags = {key: val['tags'] for key, val in metadata.items()}
     # キャプションとタグを別々のファイルに保存
     (output_dir / 'metadata_captions.json').write_text(json.dumps(merge_captions, indent=2), encoding="utf-8")
+    print(f"Captions saved to {output_dir / 'metadata_captions.json'}")
     (output_dir / 'metadata_tags.json').write_text(json.dumps(merge_tags, indent=2), encoding="utf-8")
+    print(f"Tags saved to {output_dir / 'metadata_tags.json'}")
 
 process_jsonl(jsonl_file_path, output_dir)

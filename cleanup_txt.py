@@ -30,9 +30,11 @@ def clean_format(text):
         str: クリーニング後のテキスト。
     """
     text = re.sub(r'\*\*', '', text) # GPT4 visionがたまに付けるマークダウンの強調を削除
-    text = re.sub(r'\n+', ', ', text) # 改行をカンマに変換
-    text = re.sub(r'\u2014', ' ', text) # ダッシュをスペースに変換
     text = re.sub(r'\.\s*$', ', ', text) # ピリオドをカンマに変換
+    text = re.sub(r'\.\s*(?=\S)', ', ', text)  # ピリオド後にスペースがあればカンマとスペースに置換し、新しい単語が続く場合はその前にスペースを追加
+    text = re.sub(r'\.\n', ', ', text)  # 改行直前のピリオドをカンマに変換
+    text = re.sub(r'\n+', ', ', text) # 改行をカンマに変換
+    text = re.sub(r'\u2014', ' ', text) # エムダッシュをスペースに変換
     text = re.sub(r'\(', r'\\(', text)  # '(' を '\(' にエスケープ
     text = re.sub(r'\)', r'\\)', text)  # ')' を '\)' にエスケープ
     return text

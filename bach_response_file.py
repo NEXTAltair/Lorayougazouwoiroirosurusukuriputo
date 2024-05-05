@@ -1,6 +1,5 @@
 import os
 import json
-import re
 from pathlib import Path
 from cleanup_txt import clean_format
 response_jsonl = Path(r"H:\lora\素材リスト\スクリプト\batch_NQSlut9MastLSSP5nHvQMkq7_output.jsonl")
