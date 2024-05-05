@@ -94,38 +94,6 @@ def upload_json_to_openai(json_path, purpose='batch'):
         print(response.text)
         return None
 
-
-
-def save_tags_and_caption(input_text, base_filename, output_dir):
-    """入力テキストからタグとキャプションを抽出し、別々のファイルに保存する。
-    Args:
-        input_text (str): 'Tags:' と 'Caption:' を含むテキスト。
-        image_filename (str): 画像ファイルの名前。
-        output_dir (str): 出力ディレクトリのパス。
-    """
-    # 'Tags:' と 'Caption:' のインデックスを見つける
-    tags_index = input_text.find('Tags:')
-    caption_index = input_text.find('Caption:')
-
-    # タグとキャプションのテキストを抽出
-    tags_text = input_text[tags_index + len('Tags:'):caption_index].strip()
-    caption_text = input_text[caption_index + len('Caption:'):].strip()
-
-    # ファイル名の準備
-    tags_filename = f"{base_filename}.txt"
-    caption_filename = f"{base_filename}.caption"
-
-    # タグをテキストファイルに保存
-    with open(os.path.join(output_dir, tags_filename), 'w', encoding='utf-8') as file:
-        file.write(tags_text)
-
-    # キャプションをキャプションファイルに保存
-    with open(os.path.join(output_dir, caption_filename), 'w', encoding='utf-8') as file:
-        file.write(caption_text)
-
-    print(f"Tags saved to {tags_filename}")
-    print(f"Caption saved to {caption_filename}")
-
 def start_batch_processing(input_file_id):
     """
     OpenAI APIを使用してバッチ処理を開始する。
