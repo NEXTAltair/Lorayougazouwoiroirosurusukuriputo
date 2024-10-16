@@ -104,8 +104,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module.api_utils.html#module.api_utils.BaseAPIClient">BaseAPIClient (module.api_utils のクラス)</a>
 </li>
-      <li><a href="main.html#main.BatchControll">BatchControll (main のクラス)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="score_module.musiq_module.html#score_module.musiq_module.Bottleneck">Bottleneck (score_module.musiq_module のクラス)</a>
@@ -278,16 +276,10 @@
 </li>
       <li><a href="module.db.html#module.db.ImageRepository.escape_special_characters">escape_special_characters() (module.db.ImageRepository のメソッド)</a>
 </li>
-      <li><a href="main.html#main.BatchControll.execute">execute() (main.BatchControll のメソッド)</a>
-
-      <ul>
-        <li><a href="main.html#main.MainControllBase.execute">(main.MainControllBase のメソッド)</a>
-</li>
-        <li><a href="module.db.html#module.db.SQLiteManager.execute">(module.db.SQLiteManager のメソッド)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module.db.html#module.db.SQLiteManager.execute">execute() (module.db.SQLiteManager のメソッド)</a>
+</li>
       <li><a href="module.db.html#module.db.SQLiteManager.executemany">executemany() (module.db.SQLiteManager のメソッド)</a>
 </li>
       <li><a href="score_module.musiq_module.html#score_module.musiq_module.Bottleneck.expansion">expansion (score_module.musiq_module.Bottleneck の属性)</a>
@@ -326,6 +318,8 @@
       <li><a href="FilePickerWidget.html#FilePickerWidget.FilePickerWidget">FilePickerWidget (FilePickerWidget のクラス)</a>
 </li>
       <li><a href="module.file_sys.html#module.file_sys.FileSystemManager">FileSystemManager (module.file_sys のクラス)</a>
+</li>
+      <li><a href="module.db.html#module.db.ImageDatabaseManager.filter_recent_annotations">filter_recent_annotations() (module.db.ImageDatabaseManager のメソッド)</a>
 </li>
       <li><a href="TagFilterWidget.html#TagFilterWidget.TagFilterWidget.filterApplied">filterApplied (TagFilterWidget.TagFilterWidget の属性)</a>
 </li>
@@ -450,6 +444,8 @@
       <li><a href="module.db.html#module.db.ImageDatabaseManager.get_low_res_image">get_low_res_image() (module.db.ImageDatabaseManager のメソッド)</a>
 </li>
       <li><a href="module.db.html#module.db.ImageDatabaseManager.get_models">get_models() (module.db.ImageDatabaseManager のメソッド)</a>
+</li>
+      <li><a href="module.db.html#module.db.ImageRepository.get_original_image">get_original_image() (module.db.ImageRepository のメソッド)</a>
 </li>
       <li><a href="module.db.html#module.db.ImageRepository.get_processed_image">get_processed_image() (module.db.ImageRepository のメソッド)</a>
 </li>
@@ -787,15 +783,6 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    main
-
-      <ul>
-        <li><a href="main.html#module-main">module</a>
-</li>
-      </ul></li>
-      <li><a href="main.html#main.MainControllBase">MainControllBase (main のクラス)</a>
-</li>
       <li><a href="gui.html#gui.MainWindow">MainWindow (gui のクラス)</a>
 </li>
       <li><a href="score_module.musiq_module.html#score_module.musiq_module.MUSIQ_Score_Dataset.merge_hdf5">merge_hdf5() (score_module.musiq_module.MUSIQ_Score_Dataset のメソッド)</a>
@@ -863,8 +850,6 @@
         <li><a href="ImagePreviewWidget.html#module-ImagePreviewWidget">ImagePreviewWidget</a>
 </li>
         <li><a href="ImageTaggerWidget.html#module-ImageTaggerWidget">ImageTaggerWidget</a>
-</li>
-        <li><a href="main.html#module-main">main</a>
 </li>
         <li><a href="module.html#module-module">module</a>, <a href="module.html#module-module">[1]</a>
 </li>
@@ -1018,7 +1003,13 @@
       <li><a href="SettingsWidget.html#SettingsWidget.SettingsWidget.on_filePickerLogFile_changed">on_filePickerLogFile_changed() (SettingsWidget.SettingsWidget のメソッド)</a>
 </li>
       <li><a href="DatasetExportWidget.html#DatasetExportWidget.DatasetExportWidget.on_filter_applied">on_filter_applied() (DatasetExportWidget.DatasetExportWidget のメソッド)</a>
+
+      <ul>
+        <li><a href="DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.on_filter_applied">(DatasetOverviewWidget.DatasetOverviewWidget のメソッド)</a>
 </li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="DirectoryPickerWidget.html#DirectoryPickerWidget.DirectoryPickerWidget.on_history_item_selected">on_history_item_selected() (DirectoryPickerWidget.DirectoryPickerWidget のメソッド)</a>
 
       <ul>
@@ -1027,8 +1018,6 @@
         <li><a href="PickerWidget.html#PickerWidget.PickerWidget.on_history_item_selected">(PickerWidget.PickerWidget のメソッド)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="SettingsWidget.html#SettingsWidget.SettingsWidget.on_lineEditAnthropicKey_editingFinished">on_lineEditAnthropicKey_editingFinished() (SettingsWidget.SettingsWidget のメソッド)</a>
 </li>
       <li><a href="SettingsWidget.html#SettingsWidget.SettingsWidget.on_lineEditGoogleVisionKey_editingFinished">on_lineEditGoogleVisionKey_editingFinished() (SettingsWidget.SettingsWidget のメソッド)</a>
@@ -1040,8 +1029,6 @@
       <li><a href="SettingsWidget.html#SettingsWidget.SettingsWidget.on_lineEditHfUsername_editingFinished">on_lineEditHfUsername_editingFinished() (SettingsWidget.SettingsWidget のメソッド)</a>
 </li>
       <li><a href="SettingsWidget.html#SettingsWidget.SettingsWidget.on_lineEditOpenAiKey_editingFinished">on_lineEditOpenAiKey_editingFinished() (SettingsWidget.SettingsWidget のメソッド)</a>
-</li>
-      <li><a href="ImageTaggerWidget.html#ImageTaggerWidget.ImageTaggerWidget.on_lowRescheckBox_clicked">on_lowRescheckBox_clicked() (ImageTaggerWidget.ImageTaggerWidget のメソッド)</a>
 </li>
       <li><a href="DirectoryPickerWidget.html#DirectoryPickerWidget.DirectoryPickerWidget.on_path_changed">on_path_changed() (DirectoryPickerWidget.DirectoryPickerWidget のメソッド)</a>
 
@@ -1101,8 +1088,6 @@
       <ul>
         <li><a href="ImageEditWidget.html#ImageEditWidget.ImageEditWidget.process_image">(ImageEditWidget.ImageEditWidget のメソッド)</a>
 </li>
-        <li><a href="main.html#main.MainControllBase.process_image">(main.MainControllBase のメソッド)</a>
-</li>
       </ul></li>
       <li><a href="ProgressWidget.html#ProgressWidget.Worker.progress_updated">progress_updated (ProgressWidget.Worker の属性)</a>, <a href="ProgressWidget.html#id6">[1]</a>
 </li>
@@ -1123,8 +1108,6 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="main.html#main.RealtimeControll">RealtimeControll (main のクラス)</a>
-</li>
       <li><a href="module.db.html#module.db.ImageDatabaseManager.register_original_image">register_original_image() (module.db.ImageDatabaseManager のメソッド)</a>
 </li>
       <li><a href="module.db.html#module.db.ImageDatabaseManager.register_processed_image">register_processed_image() (module.db.ImageDatabaseManager のメソッド)</a>
@@ -1136,8 +1119,6 @@
 </li>
       </ul></li>
       <li><a href="score_module.musiq_module.html#score_module.musiq_module.resize_img_resos">resize_img_resos() (score_module.musiq_module モジュール)</a>
-</li>
-      <li><a href="main.html#main.ResizeControll">ResizeControll (main のクラス)</a>
 </li>
       <li><a href="ImagePreviewWidget.html#ImagePreviewWidget.ImagePreviewWidget.resizeEvent">resizeEvent() (ImagePreviewWidget.ImagePreviewWidget のメソッド)</a>
 
@@ -1323,10 +1304,10 @@
 </li>
       <li><a href="TagFilterWidget.html#TagFilterWidget.TagFilterWidget.setup_slider">setup_slider() (TagFilterWidget.TagFilterWidget のメソッド)</a>
 </li>
-      <li><a href="TagFilterWidget.html#TagFilterWidget.CustomRangeSlider.setup_ui">setup_ui() (TagFilterWidget.CustomRangeSlider のメソッド)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="TagFilterWidget.html#TagFilterWidget.CustomRangeSlider.setup_ui">setup_ui() (TagFilterWidget.CustomRangeSlider のメソッド)</a>
+</li>
       <li><a href="gui_file.DatasetExportWidget_ui.html#gui_file.DatasetExportWidget_ui.Ui_DatasetExportWidget.setupUi">setupUi() (gui_file.DatasetExportWidget_ui.Ui_DatasetExportWidget のメソッド)</a>
 
       <ul>
@@ -1384,8 +1365,6 @@
 </li>
       </ul></li>
       <li><a href="ProgressWidget.html#ProgressWidget.Controller.start_process">start_process() (ProgressWidget.Controller のメソッド)</a>, <a href="ProgressWidget.html#id1">[1]</a>
-</li>
-      <li><a href="main.html#main.start_processing">start_processing() (main モジュール)</a>
 </li>
       <li><a href="DatasetExportWidget.html#DatasetExportWidget.DatasetExportWidget.staticMetaObject">staticMetaObject (DatasetExportWidget.DatasetExportWidget の属性)</a>
 
@@ -1521,10 +1500,10 @@
 </li>
       <li><a href="gui_file.ThumbnailSelectorWidget_ui.html#gui_file.ThumbnailSelectorWidget_ui.Ui_ThumbnailSelectorWidget">Ui_ThumbnailSelectorWidget (gui_file.ThumbnailSelectorWidget_ui のクラス)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.update_annotations">update_annotations() (DatasetOverviewWidget.DatasetOverviewWidget のメソッド)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="DatasetExportWidget.html#DatasetExportWidget.DatasetExportWidget.update_export_progress">update_export_progress() (DatasetExportWidget.DatasetExportWidget のメソッド)</a>
 </li>
       <li><a href="PickerWidget.html#PickerWidget.PickerWidget.update_history">update_history() (PickerWidget.PickerWidget のメソッド)</a>
@@ -1548,7 +1527,11 @@
       <li><a href="ThumbnailSelectorWidget.html#ThumbnailSelectorWidget.ThumbnailSelectorWidget.update_thumbnail_layout">update_thumbnail_layout() (ThumbnailSelectorWidget.ThumbnailSelectorWidget のメソッド)</a>
 </li>
       <li><a href="DatasetExportWidget.html#DatasetExportWidget.DatasetExportWidget.update_thumbnail_selector">update_thumbnail_selector() (DatasetExportWidget.DatasetExportWidget のメソッド)</a>
+
+      <ul>
+        <li><a href="DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.update_thumbnail_selector">(DatasetOverviewWidget.DatasetOverviewWidget のメソッド)</a>
 </li>
+      </ul></li>
       <li><a href="ImageEditor.html#ImageEditor.Upscaler.upscale_image">upscale_image() (ImageEditor.Upscaler のクラスメソッド)</a>
 </li>
       <li><a href="ImageEditor.html#ImageEditor.Upscaler">Upscaler (ImageEditor のクラス)</a>

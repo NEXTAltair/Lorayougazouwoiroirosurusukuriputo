@@ -38,6 +38,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span>
 
 <span class="kn">from</span> <span class="nn">module</span> <span class="kn">import</span> <span class="n">tag_search</span>
+<span class="kn">from</span> <span class="nn">module.log</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
 <span class="n">HAIR_PATTERNS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(long|short|medium) hair&#39;</span><span class="p">),</span>
@@ -95,7 +96,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag_searcher</span> <span class="o">=</span> <span class="n">tag_search</span><span class="o">.</span><span class="n">initialize_tag_searcher</span><span class="p">()</span>
-        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TagCleaner.clean_format">
 <a class="viewcode-back" href="../../module.cleanup_txt.html#module.cleanup_txt.TagCleaner.clean_format">[ドキュメント]</a>
@@ -286,7 +287,7 @@
 <a class="viewcode-back" href="../../module.cleanup_txt.html#module.cleanup_txt.initialize_tag_cleaner">[ドキュメント]</a>
 <span class="k">def</span> <span class="nf">initialize_tag_cleaner</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TagCleaner</span><span class="p">:</span>
     <span class="n">project_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">db_path</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">&quot;tags_v3.db&quot;</span>
+    <span class="n">db_path</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s1">&#39;src&#39;</span> <span class="o">/</span> <span class="s1">&#39;module&#39;</span> <span class="o">/</span> <span class="s1">&#39;genai-tag-db-tools&#39;</span> <span class="o">/</span> <span class="s1">&#39;tags_v3.db&#39;</span>
     <span class="k">return</span> <span class="n">TagCleaner</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span></div>
 
 </pre></div>

@@ -34,9 +34,11 @@
   <h1>module.db のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">sqlite3</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">imagehash</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
@@ -374,9 +376,9 @@
         <span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenAI&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;gpt-4-turbo&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenAI&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;gpt-4o-mini&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenAI&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;laion&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;cafe&#39;</span><span class="p">,</span> <span class="s1">&#39;score&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;gpt-4o-mini&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;OpenAI&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;gemini-1.5-pro-exp-0801&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;Google&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;gemini-1.5-pro-preview-0409&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;Google&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;gemini-1.0-pro-vision&#39;</span><span class="p">,</span> <span class="s1">&#39;vision&#39;</span><span class="p">,</span> <span class="s1">&#39;Google&#39;</span><span class="p">),</span>
@@ -584,7 +586,7 @@
             <span class="k">if</span> <span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">model_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">caption</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_id&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">caption</span> <span class="ow">in</span> <span class="n">captions</span> <span class="k">if</span> <span class="n">caption</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_id&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;model_idはすべてNoneで保存されます。&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;model_idはすべてNoneで保存されます。&quot;</span><span class="p">)</span>
 
         <span class="n">tags_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tag&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag_dict</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
         <span class="n">caption_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">caption_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;caption&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">caption_dict</span> <span class="ow">in</span> <span class="n">captions</span><span class="p">]</span>
@@ -972,33 +974,96 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="ImageRepository.get_processed_image">
-<a class="viewcode-back" href="../../module.db.html#module.db.ImageRepository.get_processed_image">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">get_processed_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<div class="viewcode-block" id="ImageRepository.get_original_image">
+<a class="viewcode-back" href="../../module.db.html#module.db.ImageRepository.get_original_image">[ドキュメント]</a>
+    <span class="k">def</span> <span class="nf">get_original_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        image_idから関連する全ての処理済み画像のメタデータを取得します。</span>
+<span class="sd">        指定されたIDのオリジナル画像のメタデータを取得します。</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            image_id (int): 元画像のID。</span>
+<span class="sd">            image_id (int): 取得する画像のID。</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            dict[str, Any]]: 処理済み画像のメタデータのリスト。</span>
+<span class="sd">            list[dict[str, Any]]: 画像メタデータを含む辞書。画像が見つからない場合はNone。</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            sqlite3.Error: データベース操作でエラーが発生した場合。</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        SELECT * FROM processed_images</span>
-<span class="s2">        WHERE image_id = ?</span>
-<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM images WHERE id = ?&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">image_id</span><span class="p">,))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ID </span><span class="si">%s</span><span class="s2"> の処理済み画像メタデータを取得しました: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span><span class="o">.</span><span class="n">fetch_one</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">image_id</span><span class="p">,))</span>
             <span class="k">return</span> <span class="n">metadata</span>
+        <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">current_method</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="k">raise</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_method</span><span class="si">}</span><span class="s2"> オリジナル画像の取得中にエラーが発生しました: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ImageRepository.get_processed_image">
+<a class="viewcode-back" href="../../module.db.html#module.db.ImageRepository.get_processed_image">[ドキュメント]</a>
+    <span class="k">def</span> <span class="nf">get_processed_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">all_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        image_idとresolutionから関連する処理済み画像のメタデータを取得し、指定した解像度でリサイズされた画像のメタデータを返します。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            image_id (int): 元画像のID。</span>
+<span class="sd">            resolution (int): リサイズ処理の基準にした解像度。0の場合は最も解像度が低い画像を返します。</span>
+<span class="sd">            all_data (bool): Trueの場合は全ての処理済み画像のメタデータを返します。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[dict[str, Any]]: 処理済み画像のメタデータを含む辞書。画像が見つからない場合はNone。</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            sqlite3.Error: データベース操作でエラーが発生した場合。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM processed_images WHERE image_id = ?&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 全ての処理済み画像を取得</span>
+            <span class="n">metadata_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">image_id</span><span class="p">,))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata_list</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> の処理済み画像メタデータを </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> 取得しました&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">all_data</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">metadata_list</span>
+            <span class="c1"># resolutionが0の場合は最も解像度が低いものを選択</span>
+            <span class="k">if</span> <span class="n">resolution</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 指定された解像度に近いものをフィルタリング</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_resolution</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">metadata</span>
+
         <span class="k">except</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">current_method</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
             <span class="k">raise</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_method</span><span class="si">}</span><span class="s2"> 処理済み画像の取得中にエラーが発生しました: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span> <span class="nf">_filter_by_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        解像度に基づいてメタデータをフィルタリングします。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metadata_list (list[dict[str, Any]]): メタデータの辞書のリスト。</span>
+<span class="sd">            resolution (int): 解像度。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, Any]]: フィルタリングされたメタデータの辞書。解像度が条件に一致するか、</span>
+<span class="sd">            指定した解像度に対して誤差が20%以下であるメタデータを返します。</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">metadata</span> <span class="ow">in</span> <span class="n">metadata_list</span><span class="p">:</span>
+            <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">],</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
+            <span class="n">long_side</span><span class="p">,</span> <span class="n">short_side</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">long_side</span> <span class="o">==</span> <span class="n">resolution</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">metadata</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">target_area</span> <span class="o">=</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">resolution</span>
+                <span class="n">actual_area</span> <span class="o">=</span> <span class="n">long_side</span> <span class="o">*</span> <span class="n">short_side</span>
+                <span class="n">error_ratio</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">target_area</span> <span class="o">-</span> <span class="n">actual_area</span><span class="p">)</span> <span class="o">/</span> <span class="n">target_area</span>
+
+                <span class="k">if</span> <span class="n">error_ratio</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">metadata</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ImageRepository.get_total_image_count">
 <a class="viewcode-back" href="../../module.db.html#module.db.ImageRepository.get_total_image_count">[ドキュメント]</a>
@@ -1158,9 +1223,13 @@
 <span class="sd">    このクラスは、ImageRepositoryを使用して、画像メタデータとアノテーションの</span>
 <span class="sd">    保存、取得、更新などの操作を行います。</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;ImageDatabaseManager&quot;</span><span class="p">)</span>
-        <span class="n">img_db_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Image_database&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;image_database.db&quot;</span>
+        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Image_database&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Image_database&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Image_database&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;image_database.db&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+            <span class="n">db_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Image_database&quot;</span><span class="p">)</span>
+        <span class="n">img_db_path</span> <span class="o">=</span> <span class="n">db_dir</span> <span class="o">/</span> <span class="s2">&quot;image_database.db&quot;</span>
         <span class="n">tag_db_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;module&quot;</span> <span class="o">/</span> <span class="s2">&quot;genai-tag-db-tools&quot;</span> <span class="o">/</span> <span class="s2">&quot;tags_v3.db&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span> <span class="o">=</span> <span class="n">SQLiteManager</span><span class="p">(</span><span class="n">img_db_path</span><span class="p">,</span> <span class="n">tag_db_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">ImageRepository</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_manager</span><span class="p">)</span>
@@ -1301,30 +1370,15 @@
 <span class="sd">            Optional[str]: 長辺が最小の処理済み画像のパス。見つからない場合はNone。</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">processed_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">processed_images</span><span class="p">:</span>
+            <span class="n">min_image_metdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">min_image_metdata</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;画像ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> に対する処理済み画像が見つかりません。&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
-
-            <span class="c1"># 長辺が最小の画像を見つける</span>
-            <span class="n">min_long_edge</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
-            <span class="n">min_image_path</span> <span class="o">=</span> <span class="kc">None</span>
-
-            <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">processed_images</span><span class="p">:</span>
-                <span class="n">width</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
-                <span class="n">height</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
-                <span class="n">long_edge</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">long_edge</span> <span class="o">&lt;</span> <span class="n">min_long_edge</span><span class="p">:</span>
-                    <span class="n">min_long_edge</span> <span class="o">=</span> <span class="n">long_edge</span>
-                    <span class="n">min_image_path</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;stored_image_path&#39;</span><span class="p">]</span>
-
+            <span class="n">min_long_edge</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_image_metdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">),</span> <span class="n">min_image_metdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">))</span>
+            <span class="n">min_image_path</span> <span class="o">=</span> <span class="n">min_image_metdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stored_image_path&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">min_image_path</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;画像ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> の最小長辺画像（</span><span class="si">{</span><span class="n">min_long_edge</span><span class="si">}</span><span class="s2">px）を取得しました。&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;画像ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> の最小長辺画像（</span><span class="si">{</span><span class="n">min_long_edge</span><span class="si">}</span><span class="s2">px）を取得しました。&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">min_image_path</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;画像ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> に対する適切な低解像度画像が見つかりません。&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;低解像度画像の取得中にエラーが発生しました: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1358,7 +1412,7 @@
 
 <div class="viewcode-block" id="ImageDatabaseManager.get_processed_metadata">
 <a class="viewcode-back" href="../../module.db.html#module.db.ImageDatabaseManager.get_processed_metadata">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">get_processed_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">get_processed_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        指定された元画像IDに関連する全ての処理済み画像のメタデータを取得します。</span>
 
@@ -1372,10 +1426,11 @@
 <span class="sd">            Exception: メタデータの取得に失敗した場合。</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">processed_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">processed_images</span><span class="p">:</span>
+            <span class="n">metadata_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">all_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata_list</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> の元画像に関連する処理済み画像が見つかりません。&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">processed_images</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">metadata_list</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;処理済み画像メタデータ取得中にエラーが発生しました: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
@@ -1503,55 +1558,32 @@
 
         <span class="c1"># image_idsの画像のアノテーションを取得､キーワード一致するNSFWが含まれるimage_idを除外</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">include_nsfw</span><span class="p">:</span>
-            <span class="n">exclude_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nsfw&#39;</span><span class="p">,</span> <span class="s1">&#39;explicit&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;pussy&#39;</span><span class="p">,</span> <span class="s1">&#39;nude&#39;</span><span class="p">,</span> <span class="s1">&#39;penis&#39;</span><span class="p">,</span> <span class="s1">&#39;cum&#39;</span><span class="p">,</span> <span class="s1">&#39;bdsm&#39;</span><span class="p">]</span>  <span class="c1"># 除外したいキーワードのリスト</span>
+            <span class="n">exclude_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nsfw&#39;</span><span class="p">,</span> <span class="s1">&#39;explicit&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;pussy&#39;</span><span class="p">,</span> <span class="s1">&#39;nude&#39;</span><span class="p">,</span> <span class="s1">&#39;penis&#39;</span><span class="p">,</span> <span class="s1">&#39;cum&#39;</span><span class="p">,</span> <span class="s1">&#39;bdsm&#39;</span><span class="p">,</span> <span class="s1">&#39;explicit&#39;</span><span class="p">]</span>  <span class="c1"># 除外したいキーワードのリスト</span>
             <span class="n">image_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_images_by_exclude_keywords</span><span class="p">(</span><span class="n">image_ids</span><span class="p">,</span> <span class="n">exclude_keywords</span><span class="p">)</span>
 
         <span class="c1"># 画像メタデータの取得</span>
         <span class="n">metadata_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">image_ids</span><span class="p">:</span>
-            <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
-            <span class="n">metadata_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
-
-        <span class="c1"># 解像度によるフィルタリング</span>
         <span class="k">if</span> <span class="n">resolution</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">filtered_metadata_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_by_resolution</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">image_ids</span><span class="p">:</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">metadata_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">filtered_metadata_list</span> <span class="o">=</span> <span class="n">metadata_list</span>
+            <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">image_ids</span><span class="p">:</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_original_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_id</span>
+                    <span class="n">metadata_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
 
-        <span class="n">list_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_metadata_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;解像度基準:</span><span class="si">{</span><span class="n">resolution</span><span class="si">}</span><span class="s1"> pxの画像はDBに登録されていません&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">list_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;フィルタリング後の画像数: </span><span class="si">{</span><span class="n">list_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">filtered_metadata_list</span><span class="p">,</span> <span class="n">list_count</span></div>
+        <span class="k">return</span> <span class="n">metadata_list</span><span class="p">,</span> <span class="n">list_count</span></div>
 
-
-    <span class="k">def</span> <span class="nf">_filter_by_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            解像度に基づいてメタデータのリストをフィルタリングします。</span>
-
-<span class="sd">            Args:</span>
-<span class="sd">                metadata_list (list[dict[str, Any]]): メタデータの辞書のリスト。</span>
-<span class="sd">                resolution (int): ディレクトリの解像度。</span>
-
-<span class="sd">            Returns:</span>
-<span class="sd">                list[dict[str, Any]]: フィルタリングされたメタデータの辞書のリスト。解像度が条件に一致するか、</span>
-<span class="sd">                解像度の条件に誤差が0.2以下のメタデータが含まれます。</span>
-
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">filtered_list</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">metadata</span> <span class="ow">in</span> <span class="n">metadata_list</span><span class="p">:</span>
-                <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">],</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
-                <span class="n">long_side</span><span class="p">,</span> <span class="n">short_side</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">long_side</span> <span class="o">==</span> <span class="n">resolution</span><span class="p">:</span>
-                    <span class="n">filtered_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">target_area</span> <span class="o">=</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">resolution</span>
-                    <span class="n">actual_area</span> <span class="o">=</span> <span class="n">long_side</span> <span class="o">*</span> <span class="n">short_side</span>
-                    <span class="n">error_ratio</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">target_area</span> <span class="o">-</span> <span class="n">actual_area</span><span class="p">)</span> <span class="o">/</span> <span class="n">target_area</span>
-
-                    <span class="k">if</span> <span class="n">error_ratio</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">:</span>
-                        <span class="n">filtered_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">filtered_list</span>
 
     <span class="k">def</span> <span class="nf">_filter_images_by_exclude_keywords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_ids</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">exclude_keywords</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1642,19 +1674,79 @@
 <span class="sd">            Optional[dict]: 処理済み画像が存在する場合はそのメタデータ、存在しない場合はNone</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">processed_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
+            <span class="n">processed_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_processed_image</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">target_resolution</span><span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">processed_image</span> <span class="ow">in</span> <span class="n">processed_images</span><span class="p">:</span>
-                <span class="n">width</span> <span class="o">=</span> <span class="n">processed_image</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
-                <span class="n">height</span> <span class="o">=</span> <span class="n">processed_image</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">width</span> <span class="o">==</span> <span class="n">target_resolution</span> <span class="ow">or</span> <span class="n">height</span> <span class="o">==</span> <span class="n">target_resolution</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">processed_image</span>
+            <span class="k">if</span> <span class="n">processed_image</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">processed_image</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID </span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2"> の画像に解像度 </span><span class="si">{</span><span class="n">target_resolution</span><span class="si">}</span><span class="s2"> に一致する処理済み画像が見つかりませんでした&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;処理済み画像のチェック中にエラーが発生しました: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">current_method</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_method</span><span class="si">}</span><span class="s2">: 処理済み画像のチェック中にエラーが発生しました。&quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot; image_id=</span><span class="si">{</span><span class="n">image_id</span><span class="si">}</span><span class="s2">, target_resolution=</span><span class="si">{</span><span class="n">target_resolution</span><span class="si">}</span><span class="s2">. エラー: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;トレースバック:</span><span class="se">\n</span><span class="si">{</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
-</div>
+
+
+<div class="viewcode-block" id="ImageDatabaseManager.filter_recent_annotations">
+<a class="viewcode-back" href="../../module.db.html#module.db.ImageDatabaseManager.filter_recent_annotations">[ドキュメント]</a>
+    <span class="k">def</span> <span class="nf">filter_recent_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        最新のアノテーションのみをフィルタリングします。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            annotations (dict): &#39;tags&#39; と &#39;captions&#39; キーを持つ辞書</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: フィルタリングされたアノテーション</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. 最新の更新時刻を見つける</span>
+        <span class="n">latest_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_latest_update</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+
+        <span class="c1"># 2. 時間範囲を計算</span>
+        <span class="n">latest_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">latest_update</span><span class="p">)</span>
+        <span class="n">time_threshold</span> <span class="o">=</span> <span class="n">latest_datetime</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;最新の更新時刻 </span><span class="si">{</span><span class="n">latest_datetime</span><span class="si">}</span><span class="s2"> から </span><span class="si">{</span><span class="n">time_threshold</span><span class="si">}</span><span class="s2"> 以内に更新されたアノテーションをエクスポート&quot;</span><span class="p">)</span>
+        <span class="c1"># 3. 5分以内に更新されたアノテーションのみをフィルタリング</span>
+        <span class="n">filtered_tags</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;updated_at&#39;</span> <span class="ow">in</span> <span class="n">tag</span> <span class="ow">and</span> <span class="n">tag</span><span class="p">[</span><span class="s1">&#39;updated_at&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">time_threshold</span>
+        <span class="p">]</span>
+
+        <span class="n">filtered_captions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">caption</span> <span class="k">for</span> <span class="n">caption</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;captions&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;updated_at&#39;</span> <span class="ow">in</span> <span class="n">caption</span> <span class="ow">and</span> <span class="n">caption</span><span class="p">[</span><span class="s1">&#39;updated_at&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">time_threshold</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="n">filtered_tags</span><span class="p">,</span>
+            <span class="s1">&#39;captions&#39;</span><span class="p">:</span> <span class="n">filtered_captions</span>
+        <span class="p">}</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_find_latest_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        アノテーションの中で最新の更新時刻を見つけます。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            annotations (dict): &#39;tags&#39; と &#39;captions&#39; キーを持つ辞書</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: 最新の更新時刻（ISO形式の文字列）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_updates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s1">&#39;updated_at&#39;</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">:</span>
+                <span class="n">all_updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">[</span><span class="s1">&#39;updated_at&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">caption</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;captions&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s1">&#39;updated_at&#39;</span> <span class="ow">in</span> <span class="n">caption</span><span class="p">:</span>
+                <span class="n">all_updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caption</span><span class="p">[</span><span class="s1">&#39;updated_at&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_updates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># 更新時刻が見つからない場合</span>
+
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_updates</span><span class="p">)</span></div>
 
 </pre></div>
 

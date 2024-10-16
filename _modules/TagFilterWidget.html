@@ -191,7 +191,9 @@
 <span class="sd">        filter_text: str,</span>
 <span class="sd">        resolution: int,</span>
 <span class="sd">        use_and: bool,</span>
-<span class="sd">        count_range: tuple</span>
+<span class="sd">        count_range: tuple,</span>
+<span class="sd">        include_untagged: bool,</span>
+<span class="sd">        include_nsfw</span>
 <span class="sd">    }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -221,11 +223,14 @@
     <span class="k">def</span> <span class="nf">on_applyFilterButton_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;フィルター条件を取得して、filterAppliedシグナルを発行&quot;&quot;&quot;</span>
         <span class="n">resolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolutionComboBox</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
-        <span class="n">split_resolution</span> <span class="o">=</span> <span class="n">resolution</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resolution</span> <span class="o">!=</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span> <span class="c1">#currentText</span>
+            <span class="n">split_resolution</span> <span class="o">=</span> <span class="n">resolution</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">split_resolution</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">filter_conditions</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;filter_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterTypeComboBox</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterTypeComboBox</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;filter_text&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterLineEdit</span><span class="o">.</span><span class="n">text</span><span class="p">(),</span>
-            <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">split_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">split_resolution</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">split_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">split_resolution</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s1">&#39;use_and&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">andRadioButton</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">andRadioButton</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s1">&#39;count_range&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_range_slider</span><span class="o">.</span><span class="n">get_range</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_range_slider</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;include_untagged&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">noTagscheckBox</span><span class="o">.</span><span class="n">isChecked</span><span class="p">(),</span>  <span class="c1"># タグ情報がない画像を含めるかどうか</span>

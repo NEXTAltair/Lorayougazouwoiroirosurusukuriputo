@@ -38,7 +38,7 @@
 <span id="module-db-module"></span><h1>module.db module<a class="headerlink" href="#module-module.db" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="module.db.ImageDatabaseManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">module.db.</span></span><span class="sig-name descname"><span class="pre">ImageDatabaseManager</span></span><a class="reference internal" href="_modules/module/db.html#ImageDatabaseManager"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#module.db.ImageDatabaseManager" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">module.db.</span></span><span class="sig-name descname"><span class="pre">ImageDatabaseManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/db.html#ImageDatabaseManager"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#module.db.ImageDatabaseManager" title="Link to this definition">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>画像データベース操作の高レベルインターフェースを提供するクラス。
 このクラスは、ImageRepositoryを使用して、画像メタデータとアノテーションの
@@ -77,6 +77,23 @@
 </dd>
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="module.db.ImageDatabaseManager.filter_recent_annotations">
+<span class="sig-name descname"><span class="pre">filter_recent_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotations</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/db.html#ImageDatabaseManager.filter_recent_annotations"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#module.db.ImageDatabaseManager.filter_recent_annotations" title="Link to this definition">¶</a></dt>
+<dd><p>最新のアノテーションのみをフィルタリングします。</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>annotations</strong> (<em>dict</em>) -- 'tags' と 'captions' キーを持つ辞書</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>フィルタリングされたアノテーション</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -541,18 +558,42 @@ score_models: {model_id: {'name': model_name, 'provider': provider}}</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="module.db.ImageRepository.get_processed_image">
-<span class="sig-name descname"><span class="pre">get_processed_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/db.html#ImageRepository.get_processed_image"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#module.db.ImageRepository.get_processed_image" title="Link to this definition">¶</a></dt>
-<dd><p>image_idから関連する全ての処理済み画像のメタデータを取得します。</p>
+<dt class="sig sig-object py" id="module.db.ImageRepository.get_original_image">
+<span class="sig-name descname"><span class="pre">get_original_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/db.html#ImageRepository.get_original_image"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#module.db.ImageRepository.get_original_image" title="Link to this definition">¶</a></dt>
+<dd><p>指定されたIDのオリジナル画像のメタデータを取得します。</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>image_id</strong> (<em>int</em>) -- 元画像のID。</p>
+<dd class="field-odd"><p><strong>image_id</strong> (<em>int</em>) -- 取得する画像のID。</p>
 </dd>
 <dt class="field-even">戻り値<span class="colon">:</span></dt>
-<dd class="field-even"><p>処理済み画像のメタデータのリスト。</p>
+<dd class="field-even"><p>画像メタデータを含む辞書。画像が見つからない場合はNone。</p>
 </dd>
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict[str, Any]]</p>
+<dd class="field-odd"><p>list[dict[str, Any]]</p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sqlite3.Error</strong> -- データベース操作でエラーが発生した場合。</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="module.db.ImageRepository.get_processed_image">
+<span class="sig-name descname"><span class="pre">get_processed_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/db.html#ImageRepository.get_processed_image"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#module.db.ImageRepository.get_processed_image" title="Link to this definition">¶</a></dt>
+<dd><p>image_idとresolutionから関連する処理済み画像のメタデータを取得し、指定した解像度でリサイズされた画像のメタデータを返します。</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_id</strong> (<em>int</em>) -- 元画像のID。</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) -- リサイズ処理の基準にした解像度。0の場合は最も解像度が低い画像を返します。</p></li>
+<li><p><strong>all_data</strong> (<em>bool</em>) -- Trueの場合は全ての処理済み画像のメタデータを返します。</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>処理済み画像のメタデータを含む辞書。画像が見つからない場合はNone。</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[dict[str, Any]]</p>
 </dd>
 <dt class="field-even">例外<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>sqlite3.Error</strong> -- データベース操作でエラーが発生した場合。</p>

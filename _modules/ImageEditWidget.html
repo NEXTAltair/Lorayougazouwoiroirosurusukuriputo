@@ -68,6 +68,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span> <span class="o">=</span> <span class="n">main_window</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_resolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;image_processing&#39;</span><span class="p">][</span><span class="s1">&#39;target_resolution&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preferred_resolutions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;preferred_resolutions&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upscaler</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comboBoxResizeOption</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
         <span class="n">upscalers</span> <span class="o">=</span> <span class="p">[</span><span class="n">upscaler</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">upscaler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">upscaler_models</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comboBoxUpscaler</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">upscalers</span><span class="p">)</span>
@@ -91,7 +92,8 @@
     <span class="k">def</span> <span class="nf">showEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;ウィジェットが表示される際にメインウィンドウで選択された画像を表示する&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">showEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">dataset_image_paths</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">dataset_image_paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">dataset_image_paths</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ImageEditWidget.load_images">
@@ -224,16 +226,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">original_image_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">get_image_metadata</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
 
-        <span class="n">existing_processed_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">check_processed_image_exists</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_resolution</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">existing_processed_image</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;既に処理済みの画像が存在します: </span><span class="si">{</span><span class="n">image_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
         <span class="n">existing_annotations</span> <span class="o">=</span> <span class="n">ImageAnalyzer</span><span class="o">.</span><span class="n">get_existing_annotations</span><span class="p">(</span><span class="n">image_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">existing_annotations</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">save_annotations</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">existing_annotations</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">save_annotations</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;captions&#39;</span><span class="p">:</span> <span class="p">[]})</span>
+
+        <span class="n">existing_processed_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">check_processed_image_exists</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_resolution</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing_processed_image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;指定解像度の画像は保存済みです: </span><span class="si">{</span><span class="n">image_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="n">processed_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ipm</span><span class="o">.</span><span class="n">process_image</span><span class="p">(</span>
             <span class="n">image_file</span><span class="p">,</span>

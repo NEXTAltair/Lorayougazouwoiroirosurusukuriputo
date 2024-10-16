@@ -33,12 +33,14 @@
             
   <h1>module.config のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">toml</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
 <span class="c1"># デフォルト設定</span>
 <span class="n">DEFAULT_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;directories&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="s1">&#39;Image_database&#39;</span><span class="p">,</span>
         <span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span>
         <span class="s1">&#39;edited_output&#39;</span><span class="p">:</span> <span class="s1">&#39;edited_output&#39;</span><span class="p">,</span>
@@ -77,7 +79,7 @@
 
 <div class="viewcode-block" id="load_config">
 <a class="viewcode-back" href="../../module.config.html#module.config.load_config">[ドキュメント]</a>
-<span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;processing.toml&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;processing.toml&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -93,7 +95,7 @@
 
 <div class="viewcode-block" id="deep_update">
 <a class="viewcode-back" href="../../module.config.html#module.config.deep_update">[ドキュメント]</a>
-<span class="k">def</span> <span class="nf">deep_update</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">u</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">deep_update</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">deep_update</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">)</span>
@@ -104,18 +106,16 @@
 
 <div class="viewcode-block" id="get_config">
 <a class="viewcode-back" href="../../module.config.html#module.config.get_config">[ドキュメント]</a>
-<span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="n">config_file</span> <span class="o">=</span> <span class="s1">&#39;processing.toml&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="n">config_file</span> <span class="o">=</span> <span class="s1">&#39;processing.toml&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">final_config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">DEFAULT_CONFIG</span><span class="p">)</span>
     <span class="n">loaded_config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
     <span class="n">final_config</span> <span class="o">=</span> <span class="n">deep_update</span><span class="p">(</span><span class="n">final_config</span><span class="p">,</span> <span class="n">loaded_config</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">final_config</span><span class="p">[</span><span class="s1">&#39;directories&#39;</span><span class="p">][</span><span class="s1">&#39;dataset&#39;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;dataset&#39; ディレクトリは設定ファイルで指定する必要があります。&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">final_config</span></div>
 
 
 <div class="viewcode-block" id="write_config_file">
 <a class="viewcode-back" href="../../module.config.html#module.config.write_config_file">[ドキュメント]</a>
-<span class="k">def</span> <span class="nf">write_config_file</span><span class="p">(</span><span class="n">config_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;processing.toml&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">write_config_file</span><span class="p">(</span><span class="n">config_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;processing.toml&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;設定をファイルに保存します。&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

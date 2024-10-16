@@ -34,63 +34,8 @@
 
           <div class="body" role="main">
             
-  <section id="module-main">
-<span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="main.BatchControll">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">BatchControll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_system_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_database_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_processing_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_analyzer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#BatchControll"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.BatchControll" title="Link to this definition">¶</a></dt>
-<dd><p>ベースクラス: <a class="reference internal" href="#main.MainControllBase" title="main.MainControllBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MainControllBase</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="main.BatchControll.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#BatchControll.execute"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.BatchControll.execute" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="main.MainControllBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">MainControllBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_system_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_database_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_processing_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_analyzer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#MainControllBase"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.MainControllBase" title="Link to this definition">¶</a></dt>
-<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>画像処理のメインコントローラーの基底クラス</p>
-<dl class="field-list simple">
-<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ABC</strong> (<em>ABC</em>) -- 抽象基底クラス</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="main.MainControllBase.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#MainControllBase.execute"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.MainControllBase.execute" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="main.MainControllBase.process_image">
-<span class="sig-name descname"><span class="pre">process_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#MainControllBase.process_image"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.MainControllBase.process_image" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="main.RealtimeControll">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">RealtimeControll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_system_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_database_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_processing_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_analyzer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#RealtimeControll"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.RealtimeControll" title="Link to this definition">¶</a></dt>
-<dd><p>ベースクラス: <a class="reference internal" href="#main.MainControllBase" title="main.MainControllBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MainControllBase</span></code></a></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="main.ResizeControll">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">ResizeControll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_system_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_database_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_processing_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_analyzer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#ResizeControll"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.ResizeControll" title="Link to this definition">¶</a></dt>
-<dd><p>ベースクラス: <a class="reference internal" href="#main.MainControllBase" title="main.MainControllBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">MainControllBase</span></code></a></p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="main.start_processing">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">start_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'processing.toml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#start_processing"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#main.start_processing" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <section id="main-module">
+<h1>main module<a class="headerlink" href="#main-module" title="Link to this heading">¶</a></h1>
 </section>
 
 

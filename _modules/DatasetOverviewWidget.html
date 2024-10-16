@@ -34,12 +34,13 @@
   <h1>DatasetOverviewWidget のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span>
-<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QMessageBox</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">QDateTime</span>
 
 <span class="kn">from</span> <span class="nn">gui_file.DatasetOverviewWidget_ui</span> <span class="kn">import</span> <span class="n">Ui_DatasetOverviewWidget</span>
 
 <span class="kn">from</span> <span class="nn">module.file_sys</span> <span class="kn">import</span> <span class="n">FileSystemManager</span>
+<span class="kn">from</span> <span class="nn">module.db</span> <span class="kn">import</span> <span class="n">ImageDatabaseManager</span>
 <span class="kn">from</span> <span class="nn">module.log</span> <span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">from</span> <span class="nn">caption_tags</span> <span class="kn">import</span> <span class="n">ImageAnalyzer</span>
 
@@ -60,19 +61,21 @@
 
         <span class="c1"># シグナル/スロット接続</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thumbnailSelector</span><span class="o">.</span><span class="n">imageSelected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_preview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbSearchWidget</span><span class="o">.</span><span class="n">filterApplied</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_filter_applied</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DatasetOverviewWidget.initialize">
 <a class="viewcode-back" href="../DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.initialize">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cm</span><span class="p">:</span> <span class="s1">&#39;ConfigManager&#39;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span></div>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cm</span><span class="p">:</span> <span class="s1">&#39;ConfigManager&#39;</span><span class="p">,</span> <span class="n">idm</span><span class="p">:</span> <span class="s1">&#39;ImageDatabaseManager&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idm</span> <span class="o">=</span> <span class="n">idm</span></div>
 
 
 <div class="viewcode-block" id="DatasetOverviewWidget.showEvent">
 <a class="viewcode-back" href="../DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.showEvent">[ドキュメント]</a>
     <span class="k">def</span> <span class="nf">showEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;ウィジェットが表示される際に呼び出されるイベントハンドラ&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">showEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">dataset_image_paths</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">dataset_image_paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">dataset_image_paths</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DatasetOverviewWidget.load_images">
@@ -85,6 +88,54 @@
         <span class="c1"># 初期画像の表示</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_files</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_preview</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="DatasetOverviewWidget.on_filter_applied">
+<a class="viewcode-back" href="../DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.on_filter_applied">[ドキュメント]</a>
+    <span class="k">def</span> <span class="nf">on_filter_applied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">filter_type</span> <span class="o">=</span> <span class="n">filter_conditions</span><span class="p">[</span><span class="s1">&#39;filter_type&#39;</span><span class="p">]</span>
+        <span class="n">filter_text</span> <span class="o">=</span> <span class="n">filter_conditions</span><span class="p">[</span><span class="s1">&#39;filter_text&#39;</span><span class="p">]</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">filter_conditions</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+        <span class="n">use_and</span> <span class="o">=</span> <span class="n">filter_conditions</span><span class="p">[</span><span class="s1">&#39;use_and&#39;</span><span class="p">]</span>
+        <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span> <span class="o">=</span> <span class="n">filter_conditions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date_range&#39;</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">include_untagged</span> <span class="o">=</span> <span class="n">filter_conditions</span><span class="p">[</span><span class="s1">&#39;include_untagged&#39;</span><span class="p">]</span>
+        <span class="c1"># 日付範囲の処理</span>
+        <span class="k">if</span> <span class="n">start_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">end_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># UTCタイムスタンプをQDateTimeに変換し、ローカルタイムゾーンに設定</span>
+            <span class="n">start_date_qt</span> <span class="o">=</span> <span class="n">QDateTime</span><span class="o">.</span><span class="n">fromSecsSinceEpoch</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span><span class="o">.</span><span class="n">toLocalTime</span><span class="p">()</span>
+            <span class="n">end_date_qt</span> <span class="o">=</span> <span class="n">QDateTime</span><span class="o">.</span><span class="n">fromSecsSinceEpoch</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span><span class="o">.</span><span class="n">toLocalTime</span><span class="p">()</span>
+
+            <span class="c1"># ローカルタイムゾーンを使用してISO 8601形式の文字列に変換</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">start_date_qt</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ISODate</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">end_date_qt</span><span class="o">.</span><span class="n">toString</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ISODate</span><span class="p">)</span>
+
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">caption</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filter_type</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span>
+            <span class="c1"># タグはカンマ区切りで複数指定されるため、リストに変換</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">filter_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">filter_type</span> <span class="o">==</span> <span class="s2">&quot;caption&quot;</span><span class="p">:</span>
+            <span class="n">caption</span> <span class="o">=</span> <span class="n">filter_text</span>
+
+        <span class="n">filtered_image_metadata</span><span class="p">,</span> <span class="n">list_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">get_images_by_filter</span><span class="p">(</span>
+            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
+            <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+            <span class="n">use_and</span><span class="o">=</span><span class="n">use_and</span><span class="p">,</span>
+            <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+            <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span>
+            <span class="n">include_untagged</span><span class="o">=</span><span class="n">include_untagged</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filtered_image_metadata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;検索条件に一致する画像がありませんでした: </span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">filter_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;検索条件に一致する画像がありませんでした: </span><span class="si">{</span><span class="n">filter_type</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">filter_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># idとpathの対応だけを取り出す</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_path_id_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]:</span> <span class="n">Path</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;stored_image_path&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">filtered_image_metadata</span><span class="p">}</span>
+
+        <span class="c1"># サムネイルセレクターを更新</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_thumbnail_selector</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_path_id_map</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></div>
 
 
 <div class="viewcode-block" id="DatasetOverviewWidget.update_preview">
@@ -102,6 +153,13 @@
             <span class="n">metadata</span> <span class="o">=</span> <span class="n">FileSystemManager</span><span class="o">.</span><span class="n">get_image_info</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_metadata_labels</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">image_path</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_annotations</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetOverviewWidget.update_thumbnail_selector">
+<a class="viewcode-back" href="../DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.update_thumbnail_selector">[ドキュメント]</a>
+    <span class="k">def</span> <span class="nf">update_thumbnail_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+        <span class="c1"># サムネイルセレクターに新しい画像リストをロード</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thumbnailSelector</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="n">image_paths</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DatasetOverviewWidget.set_metadata_labels">
@@ -147,6 +205,14 @@
             <span class="n">captions_text</span> <span class="o">=</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">captions</span><span class="p">)</span>  <span class="c1"># キャプションをパイプで区切って結合</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">captionTextEdit</span><span class="o">.</span><span class="n">setPlainText</span><span class="p">(</span><span class="n">captions_text</span><span class="p">)</span>
 
+        <span class="k">elif</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># DBkからアノテーション情報を検索</span>
+            <span class="n">image_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">detect_duplicate_image</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idm</span><span class="o">.</span><span class="n">get_image_annotations</span><span class="p">(</span><span class="n">image_id</span><span class="p">)</span>
+            <span class="n">tags_text</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">tag_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tag&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag_data</span> <span class="ow">in</span> <span class="n">image_data</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tagsTextEdit</span><span class="o">.</span><span class="n">setPlainText</span><span class="p">(</span><span class="n">tags_text</span><span class="p">)</span>
+            <span class="n">captions_text</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">caption_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;caption&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">caption_data</span> <span class="ow">in</span> <span class="n">image_data</span><span class="p">[</span><span class="s1">&#39;captions&#39;</span><span class="p">]])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">captionTextEdit</span><span class="o">.</span><span class="n">setPlainText</span><span class="p">(</span><span class="n">captions_text</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tagsTextEdit</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">captionTextEdit</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
@@ -155,7 +221,7 @@
 <div class="viewcode-block" id="DatasetOverviewWidget.calculate_aspect_ratio">
 <a class="viewcode-back" href="../DatasetOverviewWidget.html#DatasetOverviewWidget.DatasetOverviewWidget.calculate_aspect_ratio">[ドキュメント]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calculate_aspect_ratio</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">calculate_aspect_ratio</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span> <span class="c1">#TODO: アスペクト比の計算がなにかおかしい</span>
         <span class="k">def</span> <span class="nf">gcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
             <span class="k">while</span> <span class="n">b</span><span class="p">:</span>
                 <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">%</span> <span class="n">b</span>
@@ -175,11 +241,12 @@
     <span class="n">setup_logger</span><span class="p">(</span><span class="n">logconf</span><span class="p">)</span>
     <span class="n">cm</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
     <span class="n">fsm</span> <span class="o">=</span> <span class="n">FileSystemManager</span><span class="p">()</span>
+    <span class="n">idm</span> <span class="o">=</span> <span class="n">ImageDatabaseManager</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;directories&#39;</span><span class="p">][</span><span class="s1">&#39;database&#39;</span><span class="p">])</span>
     <span class="n">directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;testimg\10_shira&quot;</span><span class="p">)</span>
     <span class="n">image_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">fsm</span><span class="o">.</span><span class="n">get_image_files</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
     <span class="n">widget</span> <span class="o">=</span> <span class="n">DatasetOverviewWidget</span><span class="p">()</span>
-    <span class="n">widget</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">idm</span><span class="p">)</span>
     <span class="n">widget</span><span class="o">.</span><span class="n">load_images</span><span class="p">(</span><span class="n">image_files</span><span class="p">)</span>
     <span class="n">widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">())</span>

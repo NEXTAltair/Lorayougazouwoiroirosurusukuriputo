@@ -37,7 +37,7 @@
 <span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">QGraphicsObject</span><span class="p">,</span> <span class="n">QGraphicsScene</span><span class="p">,</span> <span class="n">QGraphicsView</span><span class="p">,</span> <span class="n">QGraphicsPixmapItem</span><span class="p">,</span>
                                <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QGraphicsItem</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">PySide6.QtGui</span> <span class="kn">import</span> <span class="n">QPixmap</span><span class="p">,</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPen</span>
-<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">QRectF</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">QRectF</span><span class="p">,</span> <span class="n">QTimer</span>
 
 <span class="kn">from</span> <span class="nn">module.log</span> <span class="kn">import</span> <span class="n">get_logger</span>
 
@@ -147,16 +147,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">thumbnail_items</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_selected_item</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="c1"># リサイズ用のタイマーを初期化</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">setSingleShot</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_thumbnail_layout</span><span class="p">)</span>
+
 <div class="viewcode-block" id="ThumbnailSelectorWidget.resizeEvent">
 <a class="viewcode-back" href="../ThumbnailSelectorWidget.html#ThumbnailSelectorWidget.ThumbnailSelectorWidget.resizeEvent">[ドキュメント]</a>
     <span class="k">def</span> <span class="nf">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        ウィジェットがリサイズされたときにサムネイルのレイアウトを更新します。</span>
+<span class="sd">        ウィジェットがリサイズされたときにタイマーをリセットします。</span>
 <span class="sd">        Args:</span>
 <span class="sd">            event (QResizeEvent): リサイズイベント</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">resizeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_thumbnail_layout</span><span class="p">()</span></div>
+        <span class="c1"># タイマーをリセットし、250ミリ秒後にupdate_thumbnail_layoutを呼び出す</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ThumbnailSelectorWidget.load_images">
