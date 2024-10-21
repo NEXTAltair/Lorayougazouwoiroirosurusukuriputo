@@ -72,8 +72,6 @@ class TagCleaner:
         Returns:
             str: クリーニング後のテキスト。
         """
-        if not isinstance(text, str):
-            return text
         text = text.lower() # 大文字を小文字に変換
         text = TagCleaner._clean_underscore(text) # アンダーバーをスペースに置き換える
         text = re.sub(r'#', '', text) # #を削除
