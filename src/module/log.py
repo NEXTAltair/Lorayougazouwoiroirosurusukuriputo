@@ -13,6 +13,7 @@ else:
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 import logging
+import traceback
 from logging.handlers import RotatingFileHandler
 from typing import Dict
 import io
