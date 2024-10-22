@@ -1,5 +1,4 @@
 import sys
-import inspect
 from pathlib import Path
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QStatusBar, QMessageBox
@@ -15,7 +14,7 @@ from module.file_sys import FileSystemManager
 class ConfigManager:
     _instance = None
     config = None
-    dataset_image_paths = None
+    dataset_image_paths = None # REVIEW: ここで保持するのは適切か？なぜこうしたかw擦れた理由をコメントで書く
 
     def __new__(cls):
         if cls._instance is None:
@@ -31,7 +30,8 @@ class ConfigManager:
 class MainWindow(QMainWindow, Ui_mainWindow):
     def __init__(self):
         self.cm = ConfigManager()
-        setup_logger(self.cm.config['log'])
+        log_conf = self.cm.config['log']
+        setup_logger(log_conf)
         self.logger = get_logger("MainWindow")
         super().__init__()
         self.setupUi(self)
@@ -47,7 +47,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.init_statusbar()
 
     def init_managers(self):
-        self.idm = ImageDatabaseManager(Path(self.cm.config['directories']['database']))
+        self.database_path = Path(self.cm.config['directories']['database'])
+        self.idm = ImageDatabaseManager(self.database_path)
+
         self.fsm = FileSystemManager()
         self.progress_widget = ProgressWidget()
         self.progress_controller = Controller(self.progress_widget)
@@ -58,7 +60,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
 
     def init_pages(self):
-        self.pageImageEdit.initialize(self.cm, self.fsm, self.idm, self)
+        self.pageImageEdit.initialize(self.cm, self.fsm, self.idm)
         self.pageImageTagger.initialize(self.cm, self.idm)
         self.pageDatasetOverview.initialize(self.cm, self.idm)
         self.pageExport.initialize(self.cm, self.fsm, self.idm)

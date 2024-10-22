@@ -1,7 +1,6 @@
-import logging
 import re
 from pathlib import Path
-from typing import Dict, Set
+from typing import Set
 
 from module import tag_search
 from module.log import get_logger
@@ -130,7 +129,7 @@ class TagCleaner:
         return ", ".join(filter(None, normalized_tags))
 
     @staticmethod
-    def _tags_to_dict(tags: str) -> Dict[int, str]:
+    def _tags_to_dict(tags: str) -> dict[int, str]:
         """タグを辞書に変換するして重複を避ける
         Args:
             tags (str): タグ
@@ -150,7 +149,7 @@ class TagCleaner:
         return tags_dict
 
     @staticmethod
-    def _clean_individual_tags(tags_dict: Dict[int, str]) -> Dict[int, str]:
+    def _clean_individual_tags(tags_dict: dict[int, str]) -> dict[int, str]:
         """髪の長さを残して色の特徴とかいろいろを含むタグを削除する"""
         # 置き換え用のプレースホルダー
         placeholder = "@@@"
@@ -180,10 +179,10 @@ class TagCleaner:
         return tags_dict
 
     @staticmethod
-    def _clean_color_object(tags_dict: Dict[int, str]) -> Dict[int, str]:
+    def _clean_color_object(tags_dict: dict[int, str]) -> dict[int, str]:
         """white shirtとshirtみたいな重複タグの削除"""
         # 単語の出現を記録する辞書
-        word_tags: Dict[str, Set[str]] = {}
+        word_tags: dict[str, Set[str]] = {}
 
         # タグから単語を抽出し、単語が含まれるタグを記録
         for tag in tags_dict.values():
@@ -198,7 +197,7 @@ class TagCleaner:
         return {k: v for k, v in tags_dict.items() if not any(v != other_tag and v in other_tag for other_tag in word_tags.get(v, set()))}
 
     @staticmethod
-    def _clean_style(tags_dict: Dict[int, str]) -> Dict[int, str]:
+    def _clean_style(tags_dict: dict[int, str]) -> dict[int, str]:
         """anime styleとanime artみたい重複タグをanimeに統一する"""
         # 単語の出現を記録する辞書
         word_tags = {}

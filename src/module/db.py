@@ -85,6 +85,11 @@ class SQLiteManager:
             return cursor.fetchall()
 
     def create_tables(self):
+        """データベースにテーブルを作成する
+
+        Todo: 
+             tag caption scoreのテーブルに人力修正したかのカラムを追加
+        """
         with self.get_connection() as conn:
             conn.executescript('''
                 -- images テーブル：オリジナル画像の情報を格納
@@ -92,6 +97,7 @@ class SQLiteManager:
                     id INTEGER PRIMARY KEY,
                     uuid TEXT UNIQUE NOT NULL,
                     phash TEXT,
+                    original_image_path TEXT NOT NULL,
                     stored_image_path TEXT NOT NULL,
                     width INTEGER NOT NULL,
                     height INTEGER NOT NULL,

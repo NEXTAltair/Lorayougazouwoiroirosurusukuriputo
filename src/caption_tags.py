@@ -106,7 +106,19 @@ class ImageAnalyzer:
             tag_format (str): タグのフォーマット (オプション)
 
         Returns:
-            dict[str, Any]: 分析結果を含む辞書（タグ、キャプション）
+            dict[str, Any]: 分析結果を含む辞書（タグ、キャプション)
+
+        Note:
+            {
+            'tags': [{'tag': 'str', 'model_id': int},{'tag': ..., 'model_id': ...}],
+            'captions':  [{'caption': 'str', 'model_id': int},{'caption': ..., 'model_id': ...}],
+            'score': {'score': float(value), 'model_id': int
+            'image_path': 'str(image_path)'
+            }
+
+        Todo:
+            一つのトークンに対してモデルIDが追加されるのは複数のモデルで一括取得に対応するため
+            スコアモデルもそうすべきだろうが､それはその仕組を追加できたときに変更する
         """
         self.format_name = format_name
         try:

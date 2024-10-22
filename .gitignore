@@ -1,21 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 venv/
-add/
-ComicPanelSplitter/
-AnimeShakitto_v1.0.0.0/
-testimg/
-!testimg/1_img/
-under-*/
-output/
-**/__pycache__/
-app.log
+ENV/
+.env
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
 
-src/score_module/
+# IDE
+.vscode/
+.idea/
+.qtcreator/
+*.code-workspace
+
+# Project specific
+*.ui
+*.npy
+processing.toml
+Image_database/
+app.log
+*.log
+output/
+
+# Temporary files
+.tmp*/
+.temp*/
+*.tmp
+*.bak
+*.swp
+
+# Test files
+!TEST/testimg/1_img/
+TEST/testimg/*
 TEST/pytest_temp/
 
-output/image_dataset/
-__pycache__/
-.tmp.driveupload/
-Image_database/
-.coverage
-processing.toml
+# Large binary files
+*.pth
+*.ckpt
+*.bin
+*.h5
 
+# Data files
+*.jsonl
+*.json
+tag.jsonl
+jsonl/
+
+# Documentation & Development
+docs/
