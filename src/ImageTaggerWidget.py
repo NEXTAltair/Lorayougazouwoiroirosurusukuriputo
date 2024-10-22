@@ -20,17 +20,24 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
 
         self.splitterMain.setSizes([self.splitterMain.width() // 3, self.splitterMain.width() * 2 // 3])
 
-    def initialize(self, cm: 'ConfigManager', idm: ImageDatabaseManager):
-        self.cm = cm
-        self.idm = idm
-        self.vision_providers = list(set(model['provider'] for model in self.cm.vision_models.values()))
-        self.format_name = ["danbooru", "e621", "derpibooru"] # TODO:そのうちDatabase参照に変更する
         self.all_webp_files = []
         self.selected_webp = []
+        self.main_prompt = ""
+        self.add_prompt = ""
         self.prompt = ""
         self.model_name = ""
         self.model = ""
         self.check_low_res = False
+        self.image_path_id_map = {}
+
+        # タグとキャプションの生成結果を保持するリスト {path: risult_dict}
+        self.all_results = {}
+
+    def initialize(self, cm: 'ConfigManager', idm: ImageDatabaseManager):
+        self.cm = cm
+        self.idm = idm
+        self.vision_providers = list(set(model['provider'] for model in self.cm.vision_models.values()))
+        self.format_name = ["danbooru", "e621", "derpibooru"] #TODO:そのうちDatabase参照に変更する
 
         self.init_ui()
 
@@ -105,6 +112,7 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
         tags = [tag.strip() for tag in filter_text.split(',')]
 
         filtered_images, list_count = self.idm.get_images_by_filter(tags=tags, include_untagged=include_untagged, include_nsfw=include_nsfw)
+        # TODO: DB検索結果の表示
 
         if not filtered_images:
             self.logger.info(f"Tag に {filter_text} を含む検索結果がありません")
@@ -152,12 +160,8 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
         self.acf.initialize(self.cm.config['prompts']['main'], self.cm.config['prompts']['additional'])
         self.ia.initialize(self.acf, (self.cm.vision_models, self.cm.score_models))
 
-        self.all_tags = []
-        self.all_captions = []
-        self.all_scores = []
-        self.all_results = []
         try:
-            for image_path in self.selected_webp:
+            for i, image_path in enumerate(self.selected_webp):
                 self.logger.info(f"{image_path.stem}の処理中")
 
                 if self.lowRescheckBox.isChecked():
@@ -168,30 +172,29 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
                         image_path = Path(self.idm.get_low_res_image(image_id))
 
                 result = self.ia.analyze_image(image_path, self.model_id, self.format_name)
-                self.all_results.append(result)
-
-                tags_data = result.get("tags", [])
-                captions_data = result.get("captions", [])
-                score = result.get('score', {}).get('score', 0)
-                self.scoreSlider.setValue(int(score * 100))
-                self.scoreSlider.setToolTip(f"{score:.2f}")
-
-                tags_list = [tag_info['tag'] for tag_info in tags_data if 'tag' in tag_info]
-                self.all_tags.append(", ".join(tags_list))
-                self.textEditTags.setPlainText(self.all_tags[-1])  # 最後に生成されたタグを表示
-
-                if captions_data:
-                    for caption_info in captions_data:
-                        if 'caption' in caption_info:
-                            self.all_captions.append(caption_info['caption'])
-                            self.textEditCaption.setPlainText(self.all_captions[-1])  # 最後に生成されたキャプションを表示
-                            break
-                else:
-                    self.all_captions.append("No caption available")
-                    self.textEditCaption.setPlainText("No caption available")
-
+                self.all_results[image_path] = result
                 self.logger.info(f"画像 {image_path.name} のタグとキャプションの生成が完了しました")
+                i += 1
+                if i == len(self.selected_webp):
+                    #HACK: kここから表示処理メソッド分ける？
+                    tags_data = result.get("tags", [])
+                    caps_data = result.get("captions", [])
+                    score = result.get('score', {}).get('score', 0)
+                    self.scoreSlider.setValue(int(score * 100))
+                    self.scoreSlider.setToolTip(f"{score:.2f}")
 
+                    tags_list = [tag_dict['tag'] for tag_dict in tags_data if 'tag' in tag_dict]
+                    combined_tags = ", ".join(tags_list)
+                    self.textEditTags.setPlainText(combined_tags)
+
+                    if caps_data:
+                        for cap_dict in caps_data:
+                            if 'caption' in cap_dict:
+                                caption_list = [cap_dict['caption'] for cap_dict in caps_data if 'caption' in cap_dict]
+                                combined_captions = ", ".join(caption_list)
+                                self.textEditCaption.setPlainText(combined_captions)
+                    else:
+                        self.textEditCaption.setPlainText("No caption available")
         except Exception as e:
             self.logger.error(f"タグとキャプションの生成中にエラーが発生しました: {e}")
             self.textEditTags.setPlainText("Error generating tags")
@@ -199,39 +202,45 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
 
     @Slot()
     def on_pushButtonSave_clicked(self):
-        if not self.selected_webp:
-            QMessageBox.warning(self, "エラー", "画像が選択されていません。")
+        save_txt_on =self.checkBoxText.isChecked()
+        save_json_on = self.checkBoxJson.isChecked()
+        register_db_on = self.checkBoxDB.isChecked()
+
+        if not save_txt_on and not save_json_on and not register_db_on:
+            QMessageBox.warning(self, "info", "保存方法が選択されていません。")
             return
 
-        save_to_txt = self.checkBoxText.isChecked()
-        save_to_json = self.checkBoxJson.isChecked()
-        save_to_db = self.checkBoxDB.isChecked()
+        if not self.selected_webp:
+            QMessageBox.warning(self, "info", "画像が選択されていません。")
+            return
 
-        # 保存先を取得 (テキストファイルとJSONファイルの場合のみ)
-        if save_to_txt or save_to_json:
-            save_dir = Path(QFileDialog.getExistingDirectory(self, "保存先フォルダを選択"))
-            self.DirectoryPickerSave.set_path(str(save_dir))
-            if not save_dir:
+        if save_txt_on or save_json_on:
+            export_dir = Path(QFileDialog.getExistingDirectory(self, "保存先フォルダを選択"))
+            self.DirectoryPickerSave.set_path(str(export_dir))
+            if not export_dir:
                 return  # キャンセルされた場合
 
         try:
-            if not self.all_tags and not self.all_captions:
-                QMessageBox.warning(self, "エラー", "タグまたはキャプションが生成されていません。")
-                return
+            for image_path, result in self.all_results.items():
+                if not result["tags"] and not result["captions"]:
+                    QMessageBox.warning(self, "info", "タグまたはキャプションが生成されていません。")
+                    return
 
-            if save_to_txt:
-                FileSystemManager.export_dataset_to_txt(
-                    self.selected_webp, self.all_tags, self.all_captions, save_dir
-                )
-            if save_to_json:
-                FileSystemManager.export_dataset_to_json(
-                    self.selected_webp, self.all_tags, self.all_captions, save_dir
-                )
-            if save_to_db:
-                self.save_to_db()
+                if image_path in self.selected_webp:
+                    image_data = {
+                        'path': image_path,
+                        'tags': result.get('tags', []),
+                        'captions': result.get('captions', [])
+                    }
+                    if save_txt_on:
+                        FileSystemManager.export_dataset_to_txt(image_data, export_dir)
+                    if save_json_on:
+                        FileSystemManager.export_dataset_to_json(image_data, export_dir)
+                    if register_db_on:
+                        self.save_to_db()
 
         except Exception as e:
-            QMessageBox.critical(self, "エラー", f"保存中にエラーが発生しました: {e}")
+            QMessageBox.critical(self, "エラー", f"アノテーション保存中にエラーが発生しました: {e}")
 
     def save_to_db(self):
         fsm = FileSystemManager() # TODO: 暫定後で設計から見直す
@@ -247,19 +256,18 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
 
 
 if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    from gui import ConfigManager
-    from module.log import setup_logger
-    cm = ConfigManager()
     import sys
-    setup_logger(cm.config["log"])
-    logger = get_logger(__name__)
+    from PySide6.QtWidgets import QApplication
+    from gui import ConfigManager, MainWindow
+
     app = QApplication(sys.argv)
+    cm = ConfigManager()
+    m_window = MainWindow()
     fsm = FileSystemManager()
     idm = ImageDatabaseManager(cm.config['directories']['database'])
-    image_files = fsm.get_image_files(Path(r"testimg\1_img")) # 画像ファイルのディレクトリを指定
+    image_dir = fsm.get_image_files(Path(r"TEST\testimg\1_img")) # 画像ファイルのディレクトリを指定
     widget = ImageTaggerWidget()
     widget.initialize(cm, idm)
-    widget.load_images(image_files)
+    widget.load_images(image_dir)
     widget.show()
     sys.exit(app.exec())

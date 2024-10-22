@@ -218,7 +218,7 @@ if __name__ == "__main__":
     m_window = MainWindow()
     m_window.init_managers()
     cm = ConfigManager()
-    image_paths = fsm.get_image_files(Path(r"H:\lora\lolita-XL\img\1_img")) # 画像ファイルのディレクトリを指定
+    image_paths = fsm.get_image_files(Path(r"TEST\testimg\1_img")) # 画像ファイルのディレクトリを指定
     widget = ImageEditWidget()
     widget.initialize(cm, fsm, idm)
     widget.load_images(image_paths)
