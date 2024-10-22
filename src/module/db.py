@@ -1356,7 +1356,7 @@ class ImageDatabaseManager:
         Returns:
             tuple[list[dict[str, Any]], int]: 条件にマッチした画像データのリストとその数
             例:([
-                {'id': 516, 'image_id': 515, 'stored_image_path': 'psth', 
+                {'id': 516, 'image_id': 515, 'stored_image_path': 'psth',
                 'width': 1024, 'height': 768, 'mode': 'RGB', 'has_alpha': 0, 'filename': '1_240925_00304.webp', 'color_space': 'RGB', 'icc_profile': 'Not present', 'created_at': '2024-09-26T20:21:08.451199', 'updated_at': '2024-09-26T20:21:08.451199'},
                 {'id': 517, 'image_id': 516, 'stored_image_path': 'psth',...}
                 ],
@@ -1573,3 +1573,14 @@ class ImageDatabaseManager:
             return None  # 更新時刻が見つからない場合
 
         return max(all_updates)
+
+    def get_tag_id_in_tag_database(self, tag: str) -> Optional[int]:
+        """タグ文字列からタグデータベース内のタグIDを取得する
+
+        Args:
+            tag (str): 検索するタグ文字列
+
+        Returns:
+            Optional[int]: タグID。見つからない場合はNone
+        """
+        return self.repository.find_tag_id(tag)

@@ -59,7 +59,7 @@ REM 仮想環境が存在しない場合、作成します
 if not exist "%venv_path%" (
     echo Creating virtual environment...
     echo 仮想環境を作成しています...
-    python -m venv "%venv_path%"
+    python -m venv  --system-site-packages "%venv_path%"
     if !errorlevel! neq 0 (
         echo Failed to create virtual environment. Please check your Python installation.
         echo 仮想環境の作成に失敗しました。Pythonのインストールを確認してください。

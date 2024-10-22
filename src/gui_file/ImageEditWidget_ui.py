@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ImageEditWidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -126,7 +126,6 @@ class Ui_ImageEditWidget(object):
 
         self.comboBoxUpscaler = QComboBox(self.groupBoxEditOptions)
         self.comboBoxUpscaler.addItem("")
-        self.comboBoxUpscaler.addItem("")
         self.comboBoxUpscaler.setObjectName(u"comboBoxUpscaler")
         self.comboBoxUpscaler.setCurrentText(u"None")
 
@@ -176,7 +175,6 @@ class Ui_ImageEditWidget(object):
 
         self.labelUpscaler.setText(QCoreApplication.translate("ImageEditWidget", u"\u30a2\u30c3\u30d7\u30b9\u30b1\u30fc\u30e9\u30fc", None))
         self.comboBoxUpscaler.setItemText(0, QCoreApplication.translate("ImageEditWidget", u"None", None))
-        self.comboBoxUpscaler.setItemText(1, QCoreApplication.translate("ImageEditWidget", u"RealESRGAN_x4plus", None))
 
         self.pushButtonStartProcess.setText(QCoreApplication.translate("ImageEditWidget", u"\u51e6\u7406\u958b\u59cb", None))
     # retranslateUi

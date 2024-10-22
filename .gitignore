@@ -15,6 +15,7 @@ TEST/pytest_temp/
 output/image_dataset/
 __pycache__/
 .tmp.driveupload/
-Image_database/image_database.db
+Image_database/
 .coverage
 processing.toml
+

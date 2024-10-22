@@ -1,11 +1,10 @@
 
+from PySide6.QtWidgets import QApplication
 import sys
 from pathlib import Path
 
 src_path = Path(__file__).parent / "src"
 sys.path.append(str(src_path))
-
-from PySide6.QtWidgets import QApplication
 from gui import MainWindow
 
 print(sys.path)

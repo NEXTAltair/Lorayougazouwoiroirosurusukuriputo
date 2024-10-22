@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QHeaderView, QMessageBox
 from PySide6.QtCore import Qt, Slot
@@ -16,18 +15,20 @@ from ImageEditor import ImageProcessingManager
 class ImageEditWidget(QWidget, Ui_ImageEditWidget):
     THUMBNAIL_SIZE = 64
     FILE_SIZE_UNIT = 1024  # KB
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.logger = get_logger("ImageEditWidget")
         self.setupUi(self)
+        self.cm = None
         self.idm = None
+        self.fsm = None
+        self.main_window = main_window
 
     def initialize(self, cm: 'ConfigManager', fsm: FileSystemManager,
-                         idm: ImageDatabaseManager, main_window):
+                         idm: ImageDatabaseManager):
         self.cm = cm
         self.idm = idm
         self.fsm = fsm
-        self.main_window = main_window
         self.target_resolution = self.cm.config['image_processing']['target_resolution']
         self.preferred_resolutions = self.cm.config['preferred_resolutions']
         self.upscaler = None
@@ -131,7 +132,10 @@ class ImageEditWidget(QWidget, Ui_ImageEditWidget):
     def on_pushButtonStartProcess_clicked(self):
         try:
             self.initialize_processing()
-            self.main_window.some_long_process(self.process_all_images)
+            if __name__ == "__main__": #NOTE: この条件分岐はテスト用､スレッディング処理なしで実行するため
+                self.process_all_images()
+            else:
+                self.main_window.some_long_process(self.process_all_images)
         except Exception as e:
             self.logger.error(f"画像処理中にエラーが発生しました: {str(e)}")
             QMessageBox.critical(self, "エラー", f"処理中にエラーが発生しました: {str(e)}")
@@ -163,6 +167,18 @@ class ImageEditWidget(QWidget, Ui_ImageEditWidget):
 
         existing_annotations = ImageAnalyzer.get_existing_annotations(image_file)
         if existing_annotations:
+            for tag_dict in existing_annotations['tags']:
+                tag = tag_dict['tag'].strip()
+                word_count = len(tag_dict['tag'].split())
+                if word_count > 5:
+                    self.logger.info(f"5単語を超えた {tag} は作品名でないか検索します。")
+                    tag_id = self.idm.get_tag_id_in_tag_database(tag)
+                    if not tag_id:
+                        self.logger.info("作品名が見つかりませんでした。キャプションとして処理します。")
+                        existing_annotations['tags'].remove(tag_dict)
+                        existing_annotations['captions'].append({'caption': tag, 'model_id': None})
+                    else:
+                        self.logger.info(f"作品名が見つかりました: {tag}")
             self.idm.save_annotations(image_id, existing_annotations)
         else:
             self.idm.save_annotations(image_id, {'tags': [], 'captions': []})
@@ -198,12 +214,13 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     config = get_config()
     fsm = FileSystemManager()
-    idm = ImageDatabaseManager()
+    idm = ImageDatabaseManager(Path("Image_database"))
+    m_window = MainWindow()
+    m_window.init_managers()
     cm = ConfigManager()
-    main_window = MainWindow()
-    image_paths = fsm.get_image_files(Path(r"testimg\10_Kaya")) # 画像ファイルのディレクトリを指定
+    image_paths = fsm.get_image_files(Path(r"H:\lora\lolita-XL\img\1_img")) # 画像ファイルのディレクトリを指定
     widget = ImageEditWidget()
-    widget.initialize(cm, fsm, idm, main_window)
+    widget.initialize(cm, fsm, idm)
     widget.load_images(image_paths)
     widget.show()
     sys.exit(app.exec())
