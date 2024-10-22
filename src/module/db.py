@@ -371,22 +371,23 @@ class ImageRepository:
             self.logger.error(f"pHashの処理中にエラーが発生しました: {e}")
             raise
 
-        required_keys = ['uuid', 'stored_image_path', 'width', 'height', 'format', 'mode',
+        required_keys = ['uuid', 'original_image_path','stored_image_path', 'width', 'height', 'format', 'mode',
                          'has_alpha', 'filename', 'extension', 'color_space', 'icc_profile', 'phash']
         if not all(key in info for key in required_keys):
             missing_keys = [key for key in required_keys if key not in info]
             raise ValueError(f"必須情報が不足しています: {', '.join(missing_keys)}")
 
         query = """
-        INSERT INTO images (uuid, stored_image_path, width, height, format, mode, has_alpha,
+        INSERT INTO images (uuid, original_image_path, stored_image_path, width, height, format, mode, has_alpha,
                             filename, extension, color_space, icc_profile, phash, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         try:
             created_at = datetime.now().isoformat()
             updated_at = created_at
             params = (
                 info['uuid'],
+                info['original_image_path'],
                 info['stored_image_path'],
                 info['width'],
                 info['height'],
@@ -405,7 +406,7 @@ class ImageRepository:
             self.logger.info(f"オリジナル画像をDBに追加しました: UUID={info['uuid']}")
             return cursor.lastrowid
         except sqlite3.Error as e:
-            self.logger.error(f"オリジナル画像の追加中にエラーが発生しました: {e}")
+            self.logger.error(f"{self.__class__.__name__}.{self.add_original_image.__name__} - SQL エラーが 発生しました: {e}")
             raise
 
     def add_processed_image(self, info: dict[str, Any]) -> int:
@@ -1138,6 +1139,7 @@ class ImageDatabaseManager:
             # メタデータにUUIDと保存パスを追加
             original_image_metadata.update({
                 'uuid': image_uuid,
+                'original_image_path': str(image_path),
                 'stored_image_path': str(db_stored_original_path)
             })
             # データベースに挿入
@@ -1146,7 +1148,6 @@ class ImageDatabaseManager:
         except Exception as e:
             self.logger.error(f"オリジナル画像の登録中にエラーが発生しました: {e}")
             return None
-
     def register_processed_image(self, image_id: int, processed_path: Path, info: dict[str, Any]) -> Optional[int]:
         """
         処理済み画像を保存し、メタデータをデータベースに登録します。
@@ -1513,6 +1514,7 @@ class ImageDatabaseManager:
             processed_image = self.repository.get_processed_image(image_id, target_resolution)
 
             if processed_image:
+                self.logger.info(f"指定解像度の画像は保存済みです: Image id {image_id}")
                 return processed_image
             self.logger.info(f"ID {image_id} の画像に解像度 {target_resolution} に一致する処理済み画像が見つかりませんでした")
             return None

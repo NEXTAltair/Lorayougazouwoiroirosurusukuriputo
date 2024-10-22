@@ -167,11 +167,12 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
                 if self.lowRescheckBox.isChecked():
                     image_id = self.idm.detect_duplicate_image(image_path)
                     if image_id is None:
+                        api_image_path = image_path #NOTE: image_pathを上書きするとselected_webp不整合が起こる
                         self.logger.info(f"DBに登録されていない画像です。{image_path.name}")
                     else:
-                        image_path = Path(self.idm.get_low_res_image(image_id))
+                        api_image_path = Path(self.idm.get_low_res_image(image_id))
 
-                result = self.ia.analyze_image(image_path, self.model_id, self.format_name)
+                result = self.ia.analyze_image(api_image_path, self.model_id, self.format_name)
                 self.all_results[image_path] = result
                 self.logger.info(f"画像 {image_path.name} のタグとキャプションの生成が完了しました")
                 i += 1

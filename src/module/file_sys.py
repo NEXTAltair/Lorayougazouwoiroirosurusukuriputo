@@ -127,11 +127,8 @@ class FileSystemManager:
             color_space = mode
             icc_profile = img.info.get('icc_profile')
             if icc_profile:
-                try:
-                    profile = ImageCms.ImageCmsProfile(BytesIO(icc_profile))
-                    color_space = ImageCms.getProfileName(profile).strip()
-                except:
-                    pass
+                profile = ImageCms.ImageCmsProfile(BytesIO(icc_profile))
+                color_space = ImageCms.getProfileName(profile).strip()
 
             return {
                 'width': width,

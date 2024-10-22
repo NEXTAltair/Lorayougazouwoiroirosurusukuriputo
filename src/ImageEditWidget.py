@@ -15,20 +15,20 @@ from ImageEditor import ImageProcessingManager
 class ImageEditWidget(QWidget, Ui_ImageEditWidget):
     THUMBNAIL_SIZE = 64
     FILE_SIZE_UNIT = 1024  # KB
-    def __init__(self, parent=None, main_window=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.logger = get_logger("ImageEditWidget")
         self.setupUi(self)
         self.cm = None
         self.idm = None
         self.fsm = None
-        self.main_window = main_window
 
     def initialize(self, cm: 'ConfigManager', fsm: FileSystemManager,
-                         idm: ImageDatabaseManager):
+                         idm: ImageDatabaseManager, main_window=None):
         self.cm = cm
         self.idm = idm
         self.fsm = fsm
+        self.main_window = main_window
         self.target_resolution = self.cm.config['image_processing']['target_resolution']
         self.preferred_resolutions = self.cm.config['preferred_resolutions']
         self.upscaler = None
@@ -185,7 +185,6 @@ class ImageEditWidget(QWidget, Ui_ImageEditWidget):
 
         existing_processed_image = self.idm.check_processed_image_exists(image_id, self.target_resolution)
         if existing_processed_image:
-            self.logger.info(f"指定解像度の画像は保存済みです: {image_file}")
             return
 
         processed_image = self.ipm.process_image(

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'gui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -113,7 +113,7 @@ class Ui_mainWindow(object):
         mainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QMenuBar(mainWindow)
         self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 802, 25))
+        self.menuBar.setGeometry(QRect(0, 0, 802, 33))
         self.menuFile = QMenu(self.menuBar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menuBar)
@@ -132,7 +132,7 @@ class Ui_mainWindow(object):
 
         self.retranslateUi(mainWindow)
 
-        self.contentStackedWidget.setCurrentIndex(5)
+        self.contentStackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(mainWindow)
