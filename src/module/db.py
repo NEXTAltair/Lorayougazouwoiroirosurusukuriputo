@@ -321,6 +321,7 @@ class SQLiteManager:
             ('gemini-1.5-pro-preview-0409', 'vision', 'Google'),
             ('gemini-1.0-pro-vision', 'vision', 'Google'),
             ('claude-3-5-sonnet-20240620', 'vision', 'Anthropic'),
+            ('claude-3-5-sonnet-20241022', 'vision', 'Anthropic'),
             ('claude-3-opus-20240229', 'vision', 'Anthropic'),
             ('claude-3-sonnet-20240229', 'vision', 'Anthropic'),
             ('claude-3-haiku-20240307', 'vision', 'Anthropic'),

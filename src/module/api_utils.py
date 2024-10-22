@@ -495,8 +495,12 @@ class Google(BaseAPIClient):
 
 class Claude(BaseAPIClient):
     """Claude API を使用するためのクライアントクラス。"""
-    SUPPORTED_VISION_MODELS = ["claude-3-5-sonnet-20240620","claude-3-opus-20240229",
-                               "claude-3-sonnet-20240229","claude-3-haiku-20240307"]
+    SUPPORTED_VISION_MODELS = [
+            "claude-3-5-sonnet-20240620",
+            "claude-3-5-sonnet-20241022",
+            "claude-3-opus-20240229",
+            "claude-3-sonnet-20240229",
+            "claude-3-haiku-20240307"]
     def __init__(self, api_key: str, prompt: str, add_prompt: str):
         self.logger = get_logger("Claude Client")
         super().__init__(prompt, add_prompt)
