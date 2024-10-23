@@ -45,16 +45,30 @@ DEFAULT_CONFIG = {
 
 def load_config(config_file: str = 'processing.toml') -> dict:
     try:
+        # TOMLファイルの読み込み
         with open(config_file, 'r', encoding='utf-8') as f:
-            config = toml.load(f)
+            load_parameters = toml.load(f)
+
+        # 必須セクションのチェック
         for section in ['directories', 'image_processing']:
-            if section not in config:
+            if section not in load_parameters:
                 raise KeyError(f"必須の設定セクション '{section}' が見つかりません。")
-        return config
-    except FileNotFoundError:
-        raise ValueError(f"設定ファイル '{config_file}' が見つかりません。")
+
+        # mainprompt.mdファイルの存在確認と読み込み
+        prompt_file = Path('mainprompt.md')
+        if prompt_file.exists():
+            with open(prompt_file, 'r', encoding='utf-8') as f:
+                load_parameters.setdefault('prompts', {})
+                load_parameters['prompts']['main'] = f.read()
+        else:
+            load_parameters.setdefault('prompts', {})
+            load_parameters['prompts']['main'] = ""  # デフォルト値として空文字列を設定
+
+        return load_parameters
+    except FileNotFoundError as exc:
+        raise ValueError(f"設定ファイル '{config_file}' が見つかりません。") from exc
     except toml.TomlDecodeError as e:
-        raise ValueError(f"設定ファイルの解析エラー: {str(e)}")
+        raise ValueError(f"設定ファイルの解析エラー: {str(e)}") from e
 
 def deep_update(d: dict[str, Any], u: dict[str, Any]) -> dict[str, Any]:
     for k, v in u.items():

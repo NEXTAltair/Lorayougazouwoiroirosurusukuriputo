@@ -112,7 +112,6 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
         tags = [tag.strip() for tag in filter_text.split(',')]
 
         filtered_images, list_count = self.idm.get_images_by_filter(tags=tags, include_untagged=include_untagged, include_nsfw=include_nsfw)
-        # TODO: DB検索結果の表示
 
         if not filtered_images:
             self.logger.info(f"Tag に {filter_text} を含む検索結果がありません")
@@ -244,8 +243,7 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
     def save_to_db(self):
         fsm = FileSystemManager() # TODO: 暫定後で設計から見直す
         fsm.initialize(Path(self.cm.config['directories']['output']), self.cm.config['image_processing']['target_resolution'])
-        for result in self.all_results:
-            image_path = Path(result['image_path'])
+        for image_path, result in self.all_results.items():
             image_id = self.idm.detect_duplicate_image(image_path)
             if image_id is None:
                 image_id, original_metadata = self.idm.register_original_image(image_path, fsm)
