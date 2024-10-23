@@ -19,7 +19,6 @@ htmlcov/
 *.code-workspace
 
 # Project specific
-*.ui
 *.npy
 processing.toml
 Image_database/
@@ -51,6 +50,3 @@ TEST/pytest_temp/
 *.json
 tag.jsonl
 jsonl/
-
-# Documentation & Development
-docs/
