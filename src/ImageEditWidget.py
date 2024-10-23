@@ -142,16 +142,16 @@ class ImageEditWidget(QWidget, Ui_ImageEditWidget):
 
     def process_all_images(self, progress_callback=None, status_callback=None, is_canceled=None):
         try:
+            self.logger.debug("画像処理開始") # Add debug log
             total_images = len(self.directory_images)
             for index, image_path in enumerate(self.directory_images):
+                self.logger.debug(f"画像処理: {index + 1}/{total_images}") # Add debug log
                 if is_canceled and is_canceled():
                     break
                 self.process_image(image_path)
-                # 進捗の更新
                 if progress_callback:
                     progress = int((index + 1) / total_images * 100)
                     progress_callback(progress)
-                # ステータスの更新
                 if status_callback:
                     status_callback(f"画像 {index + 1}/{total_images} を処理中")
         except Exception as e:

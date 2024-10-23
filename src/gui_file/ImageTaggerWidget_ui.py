@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ImageTaggerWidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -35,7 +35,7 @@ class Ui_ImageTaggerWidget(object):
         self.splitterMain = QSplitter(ImageTaggerWidget)
         self.splitterMain.setObjectName(u"splitterMain")
         self.splitterMain.setOrientation(Qt.Orientation.Horizontal)
-        self.splitterMain.setProperty("sizes", 667)
+        self.splitterMain.setProperty(u"sizes", 667)
         self.taggingAreaWidget = QWidget(self.splitterMain)
         self.taggingAreaWidget.setObjectName(u"taggingAreaWidget")
         self.verticalLayoutTaggingArea = QVBoxLayout(self.taggingAreaWidget)
@@ -82,8 +82,8 @@ class Ui_ImageTaggerWidget(object):
 
         self.groupBoxPrompt = QGroupBox(self.taggingAreaWidget)
         self.groupBoxPrompt.setObjectName(u"groupBoxPrompt")
-        self.verticalLayoutPrompt = QVBoxLayout(self.groupBoxPrompt)
-        self.verticalLayoutPrompt.setObjectName(u"verticalLayoutPrompt")
+        self.verticalLayout = QVBoxLayout(self.groupBoxPrompt)
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.textEditMainPrompt = QTextEdit(self.groupBoxPrompt)
         self.textEditMainPrompt.setObjectName(u"textEditMainPrompt")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -92,7 +92,7 @@ class Ui_ImageTaggerWidget(object):
         sizePolicy.setHeightForWidth(self.textEditMainPrompt.sizePolicy().hasHeightForWidth())
         self.textEditMainPrompt.setSizePolicy(sizePolicy)
 
-        self.verticalLayoutPrompt.addWidget(self.textEditMainPrompt)
+        self.verticalLayout.addWidget(self.textEditMainPrompt)
 
         self.textEditAddPrompt = QTextEdit(self.groupBoxPrompt)
         self.textEditAddPrompt.setObjectName(u"textEditAddPrompt")
@@ -102,37 +102,52 @@ class Ui_ImageTaggerWidget(object):
         sizePolicy1.setHeightForWidth(self.textEditAddPrompt.sizePolicy().hasHeightForWidth())
         self.textEditAddPrompt.setSizePolicy(sizePolicy1)
 
-        self.verticalLayoutPrompt.addWidget(self.textEditAddPrompt)
+        self.verticalLayout.addWidget(self.textEditAddPrompt)
 
         self.pushButtonGenerate = QPushButton(self.groupBoxPrompt)
         self.pushButtonGenerate.setObjectName(u"pushButtonGenerate")
 
-        self.verticalLayoutPrompt.addWidget(self.pushButtonGenerate)
+        self.verticalLayout.addWidget(self.pushButtonGenerate)
 
 
         self.verticalLayoutTaggingArea.addWidget(self.groupBoxPrompt)
 
         self.groupBoxResults = QGroupBox(self.taggingAreaWidget)
         self.groupBoxResults.setObjectName(u"groupBoxResults")
-        self.verticalLayoutResults = QVBoxLayout(self.groupBoxResults)
-        self.verticalLayoutResults.setObjectName(u"verticalLayoutResults")
-        self.textEditTags = QTextEdit(self.groupBoxResults)
-        self.textEditTags.setObjectName(u"textEditTags")
-
-        self.verticalLayoutResults.addWidget(self.textEditTags)
-
-        self.textEditCaption = QTextEdit(self.groupBoxResults)
-        self.textEditCaption.setObjectName(u"textEditCaption")
-
-        self.verticalLayoutResults.addWidget(self.textEditCaption)
-
+        self.gridLayout = QGridLayout(self.groupBoxResults)
+        self.gridLayout.setObjectName(u"gridLayout")
         self.scoreSlider = QSlider(self.groupBoxResults)
         self.scoreSlider.setObjectName(u"scoreSlider")
         self.scoreSlider.setMaximum(1000)
         self.scoreSlider.setSingleStep(1)
         self.scoreSlider.setOrientation(Qt.Orientation.Horizontal)
 
-        self.verticalLayoutResults.addWidget(self.scoreSlider)
+        self.gridLayout.addWidget(self.scoreSlider, 4, 0, 1, 1)
+
+        self.textEditCaption = QTextEdit(self.groupBoxResults)
+        self.textEditCaption.setObjectName(u"textEditCaption")
+
+        self.gridLayout.addWidget(self.textEditCaption, 2, 0, 1, 1)
+
+        self.textEditTags = QTextEdit(self.groupBoxResults)
+        self.textEditTags.setObjectName(u"textEditTags")
+
+        self.gridLayout.addWidget(self.textEditTags, 1, 0, 1, 1)
+
+        self.horizontalLayoutSave = QHBoxLayout()
+        self.horizontalLayoutSave.setObjectName(u"horizontalLayoutSave")
+        self.DirectoryPickerSave = DirectoryPickerWidget(self.groupBoxResults)
+        self.DirectoryPickerSave.setObjectName(u"DirectoryPickerSave")
+
+        self.horizontalLayoutSave.addWidget(self.DirectoryPickerSave)
+
+        self.pushButtonSave = QPushButton(self.groupBoxResults)
+        self.pushButtonSave.setObjectName(u"pushButtonSave")
+
+        self.horizontalLayoutSave.addWidget(self.pushButtonSave)
+
+
+        self.gridLayout.addLayout(self.horizontalLayoutSave, 6, 0, 1, 1)
 
         self.savecheckWidget = QWidget(self.groupBoxResults)
         self.savecheckWidget.setObjectName(u"savecheckWidget")
@@ -154,22 +169,14 @@ class Ui_ImageTaggerWidget(object):
         self.horizontalLayout_2.addWidget(self.checkBoxDB)
 
 
-        self.verticalLayoutResults.addWidget(self.savecheckWidget)
+        self.gridLayout.addWidget(self.savecheckWidget, 5, 0, 1, 1)
 
-        self.horizontalLayoutSave = QHBoxLayout()
-        self.horizontalLayoutSave.setObjectName(u"horizontalLayoutSave")
-        self.DirectoryPickerSave = DirectoryPickerWidget(self.groupBoxResults)
-        self.DirectoryPickerSave.setObjectName(u"DirectoryPickerSave")
+        self.textEditGenaiPrompt = QTextEdit(self.groupBoxResults)
+        self.textEditGenaiPrompt.setObjectName(u"textEditGenaiPrompt")
+        sizePolicy1.setHeightForWidth(self.textEditGenaiPrompt.sizePolicy().hasHeightForWidth())
+        self.textEditGenaiPrompt.setSizePolicy(sizePolicy1)
 
-        self.horizontalLayoutSave.addWidget(self.DirectoryPickerSave)
-
-        self.pushButtonSave = QPushButton(self.groupBoxResults)
-        self.pushButtonSave.setObjectName(u"pushButtonSave")
-
-        self.horizontalLayoutSave.addWidget(self.pushButtonSave)
-
-
-        self.verticalLayoutResults.addLayout(self.horizontalLayoutSave)
+        self.gridLayout.addWidget(self.textEditGenaiPrompt, 3, 0, 1, 1)
 
 
         self.verticalLayoutTaggingArea.addWidget(self.groupBoxResults)
@@ -187,7 +194,7 @@ class Ui_ImageTaggerWidget(object):
         self.splitterImage = QSplitter(self.imageAreaWidget)
         self.splitterImage.setObjectName(u"splitterImage")
         self.splitterImage.setOrientation(Qt.Orientation.Vertical)
-        self.splitterImage.setProperty("sizes", 100)
+        self.splitterImage.setProperty(u"sizes", 100)
         self.ImagePreview = ImagePreviewWidget(self.splitterImage)
         self.ImagePreview.setObjectName(u"ImagePreview")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -231,9 +238,10 @@ class Ui_ImageTaggerWidget(object):
 #if QT_CONFIG(tooltip)
         self.scoreSlider.setToolTip(QCoreApplication.translate("ImageTaggerWidget", u"<html><head/><body><p>\u30b9\u30b3\u30a2</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
+        self.pushButtonSave.setText(QCoreApplication.translate("ImageTaggerWidget", u"\u4fdd\u5b58", None))
         self.checkBoxText.setText(QCoreApplication.translate("ImageTaggerWidget", u"txt", None))
         self.checkBoxJson.setText(QCoreApplication.translate("ImageTaggerWidget", u"Json", None))
         self.checkBoxDB.setText(QCoreApplication.translate("ImageTaggerWidget", u"DataBase", None))
-        self.pushButtonSave.setText(QCoreApplication.translate("ImageTaggerWidget", u"\u4fdd\u5b58", None))
+        self.textEditGenaiPrompt.setPlaceholderText(QCoreApplication.translate("ImageTaggerWidget", u"\u751f\u6210\u7528Prompt\uff61 \", \"\u3067\u5206\u5272\u3055\u308c\u3066\u30bf\u30b0\u3068\u3057\u3066\u767b\u9332\u3055\u308c\u308b", None))
     # retranslateUi
 

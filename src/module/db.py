@@ -480,6 +480,7 @@ class ImageRepository:
             raise sqlite3.Error(f"{current_method} 画像メタデータの取得中にエラーが発生しました : {e}")
 
     def save_annotations(self, image_id: int, annotations: dict[str, Union[list[str], float, int]]) -> None:
+        # OPTIMIZE: このメソッドの処理を最適化する
         """
         画像のアノテーション（タグ、キャプション、スコア）を保存します。
 
@@ -522,6 +523,8 @@ class ImageRepository:
                 score = score_data.get('score', 0)
                 score_model_id = score_data.get('model_id', model_id)
                 self.save_score(image_id, score, score_model_id)
+            else:
+                self.logger.info("スコアは保存されません。")
         except sqlite3.Error as e:
             current_method = inspect.currentframe().f_code.co_name
             raise sqlite3.Error(f"{current_method} アノテーションの保存中にエラーが発生しました: {e}")
@@ -1149,6 +1152,7 @@ class ImageDatabaseManager:
         except Exception as e:
             self.logger.error(f"オリジナル画像の登録中にエラーが発生しました: {e}")
             return None
+
     def register_processed_image(self, image_id: int, processed_path: Path, info: dict[str, Any]) -> Optional[int]:
         """
         処理済み画像を保存し、メタデータをデータベースに登録します。
@@ -1194,15 +1198,15 @@ class ImageDatabaseManager:
         Raises:
             Exception: アノテーションの保存に失敗した場合。
         """
-        self.logger.debug(f"save_annotations called with image_id: {image_id}, annotations: {annotations}")
-        self.logger.debug(f"Type of annotations: {type(annotations)}")
-
         try:
             self.repository.save_annotations(image_id, annotations)
             self.logger.info(f"画像 ID {image_id} のアノテーション{annotations}を保存しました")
         except Exception as e:
             self.logger.error(f"アノテーションの保存中にエラーが発生しました: {e}")
             raise
+
+    def register_prompt_tags(self, image_id: int, tags: list[str]) -> None:
+        self.repository._save_tags(image_id, tags, None)
 
     def save_score(self, image_id: int, score_dict: dict[str, Any]) -> None:
         """

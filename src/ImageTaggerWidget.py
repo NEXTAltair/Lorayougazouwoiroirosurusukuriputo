@@ -24,7 +24,7 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
         self.selected_webp = []
         self.main_prompt = ""
         self.add_prompt = ""
-        self.prompt = ""
+        self.imggen_prompt = ""
         self.model_name = ""
         self.model = ""
         self.check_low_res = False
@@ -144,12 +144,17 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
     @Slot()
     def on_textEditMainPrompt_textChanged(self):
         self.main_prompt = self.textEditMainPrompt.toPlainText()
-        self.cm.config['prompts']['main'] = self.main_prompt
+        self.cm.config['prompts']['main_prompt'] = self.main_prompt
 
     @Slot()
     def on_textEditAddPrompt_textChanged(self):
         self.add_prompt = self.textEditAddPrompt.toPlainText()
         self.cm.config['prompts']['additional'] = self.add_prompt
+
+    @Slot()
+    def on_textEditGenaiPrompt_textChanged(self):
+        self.imggen_prompt = self.textEditAddPrompt.toPlainText()
+        self.cm.config['prompts']['imggen_prompt'] = self.imggen_prompt.strip()
 
     @Slot()
     def on_pushButtonGenerate_clicked(self):
@@ -249,6 +254,9 @@ class ImageTaggerWidget(QWidget, Ui_ImageTaggerWidget):
                 image_id, original_metadata = self.idm.register_original_image(image_path, fsm)
                 self.logger.info(f"ImageTaggerWidget.save_to_db {image_path.name}")
 
+            if self.imggen_prompt:
+                tag_list = [tag.strip() for tag in self.imggen_prompt.split(',') if tag.strip()]
+                self.idm.register_prompt_tags(image_id, tag_list) # NOTE: 手入力 imggen_prompt とモデルIDが違うので別に登録
             self.idm.save_annotations(image_id, result)
 
 

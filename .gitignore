@@ -24,8 +24,9 @@ htmlcov/
 processing.toml
 Image_database/
 app.log
-*.log
+*.log*
 output/
+src\module\genai-tag-db-tools
 
 # Temporary files
 .tmp*/
